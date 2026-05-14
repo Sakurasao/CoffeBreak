@@ -111,16 +111,26 @@
             </div>
 
             <div class="tab-pane fade show active" id="content-transactions">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="fw-bold">Histori Transaksi</h2>
-                    <div class="d-flex gap-2">
-                        <input type="date" id="filter-date-trans" class="form-control form-control-sm">
-                        <button class="btn btn-sm btn-brand" onclick="loadTransactions()">Filter</button>
-                    </div>
+              <div
+                class="d-flex justify-content-between align-items-center mb-4"
+              >
+                <h2 class="fw-bold">Histori Transaksi</h2>
+                <div class="d-flex gap-2">
+                  <input
+                    type="date"
+                    id="filter-date-trans"
+                    class="form-control form-control-sm"
+                  />
+                  <button
+                    class="btn btn-sm btn-brand"
+                    onclick="loadTransactions()"
+                  >
+                    Filter
+                  </button>
                 </div>
-                
-                <div id="transaction-container">
-                    </div>
+              </div>
+
+              <div id="transaction-container"></div>
             </div>
 
             <div class="tab-pane fade" id="content-report">
@@ -171,183 +181,147 @@
 
     <script>
       const apiBaseUrl = "https://sakurasao-coffebreakapi.hf.space";
-
-      async function loadStock() {
-        const res = await fetch(`${apiBaseUrl}/menu`);
-        const data = await res.json();
-        const tbody = document.getElementById("table-stock");
-        tbody.innerHTML = data
-          .map(
-            (item) => `
-            <tr>
-                <td><strong>${item.name}</strong></td>
-                <td><span class="badge bg-light text-dark">${item.category}</span></td>
-                <td><span class="fw-bold ${item.stock < 10 ? "text-danger" : ""}">${item.stock}</span></td>
-                <td>
-                    <div class="input-group input-group-sm">
-                        <input type="number" id="input-${item.id}" class="form-control" placeholder="+/- stok">
-                        <button class="btn btn-brand" onclick="updateStock(${item.id})">Simpan</button>
-                    </div>
-                </td>
-            </tr>
-        `,
-          )
-          .join("");
-      }
-
-      async function updateStock(id) {
-        const newStock = document.getElementById(`input-${id}`).value;
-        if (!newStock) return alert("Isi jumlah stok!");
-
-        await fetch(`${apiBaseUrl}/admin/update-stock/${id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ stock: parseInt(newStock) }),
-        });
-        alert("Stok diperbarui!");
-        loadStock();
-      }
-
-      async function loadTransactions() {
-    const filterDate = document.getElementById('filter-date-trans').value;
-    let url = `${apiBaseUrl}/admin/transactions`;
-    if (filterDate) url += `?date=${filterDate}`;
-
-    const res = await fetch(url);
-    const data = await res.json();
-    const container = document.getElementById('transaction-container');
-    
-    if (data.length === 0) {
-        container.innerHTML = '<p class="text-center py-5 text-muted">Tidak ada transaksi ditemukan.</p>';
-        return;
-    }
-
-    let html = '';
-    let currentDay = '';
-    let dailyTotal = 0;
-
-    data.forEach((order, index) => {
-        // Mengonversi waktu UTC dari database ke tanggal lokal (WIB) dalam format YYYY-MM-DD
-        const localDateObj = new Date(order.created_at);
-        const orderDate = localDateObj.toLocaleDateString('en-CA'); // en-CA menghasilkan format YYYY-MM-DD
-
-        // Jika ganti hari (atau transaksi pertama)
-        if (orderDate !== currentDay) {
-            // Tampilkan total hari sebelumnya (kecuali untuk hari pertama yang muncul)
-            if (currentDay !== '') {
-                html += `
-                    <div class="alert alert-secondary d-flex justify-content-between mb-5 shadow-sm">
-                        <strong class="text-uppercase">Total Pendapatan ${currentDay}</strong>
-                        <strong class="text-brand">Rp ${dailyTotal.toLocaleString()}</strong>
-                    </div>`;
-                dailyTotal = 0; // Reset total harian
-            }
-
-            currentDay = orderDate;
-            html += `<h5 class="fw-bold mt-5 mb-3"><i class="bi bi-calendar3 me-2"></i> Hari: ${currentDay}</h5>`;
-        }
-
-        dailyTotal += order.total_price;
-
-        // Render Card Transaksi
-        html += `
-            <div class="card mb-3 border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="badge ${order.status === 'Completed' ? 'bg-success' : 'bg-warning'} mb-2">
-                                ${order.status}
-                            </span>
-                            <h6 class="mb-1 fw-bold">Antrean: ${order.queue_number}</h6>
-                            <small class="text-muted">${new Date(order.created_at).toLocaleTimeString()}</small>
-                        </div>
-                        <div class="text-end">
-                            <div class="fw-bold text-brand">Rp ${order.total_price.toLocaleString()}</div>
-                            <button class="btn btn-sm btn-outline-secondary mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#detail-${order.id}">
-                                Detail
-                            </button>
-                        </div>
-                    </div>
-                    <div class="collapse mt-3" id="detail-${order.id}">
-                        <ul class="list-group list-group-flush small">
-                            ${order.order_items.map(it => `
-                                <li class="list-group-item d-flex justify-content-between px-0">
-                                    <span>${it.quantity}x ${it.products.name}</span>
-                                    <span>Rp ${(it.quantity * it.price_at_purchase).toLocaleString()}</span>
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                </div>
-            </div>`;
-        
-        // Jika ini adalah data terakhir, tampilkan total hari tersebut
-        if (index === data.length - 1) {
-            html += `
-                <div class="alert alert-secondary d-flex justify-content-between mb-5 shadow-sm">
-                    <strong class="text-uppercase">Total Pendapatan ${currentDay}</strong>
-                    <strong class="text-brand">Rp ${dailyTotal.toLocaleString()}</strong>
-                </div>`;
-        }
-    });
-
-    container.innerHTML = html;
-}
-
-      // Init
-      loadStock();
-      document
-        .getElementById("tab-orders")
-        .addEventListener("click", loadTransactions);
-
       let myChart = null;
 
+      // 1. LOAD TRANSAKSI (DENGAN FIX TANGGAL WIB)
+      async function loadTransactions() {
+        const filterDate = document.getElementById("filter-date-trans").value;
+        let url = `${apiBaseUrl}/admin/transactions`;
+        if (filterDate) url += `?date=${filterDate}`;
+
+        const res = await fetch(url);
+        const data = await res.json();
+        const container = document.getElementById("transaction-container");
+
+        if (data.length === 0) {
+          container.innerHTML =
+            '<p class="text-center py-5 text-muted">Tidak ada transaksi ditemukan.</p>';
+          return;
+        }
+
+        let html = "";
+        let currentDay = "";
+        let dailyTotal = 0;
+
+        data.forEach((order, index) => {
+          // FIX: Konversi UTC ke WIB (Tanggal Lokal)
+          const localDateObj = new Date(order.created_at);
+          const orderDate = localDateObj.toLocaleDateString("en-CA"); // Format YYYY-MM-DD
+
+          if (orderDate !== currentDay) {
+            if (currentDay !== "") {
+              html += `<div class="alert alert-secondary d-flex justify-content-between mb-5 shadow-sm">
+                                <strong class="text-uppercase">Total Pendapatan ${currentDay}</strong>
+                                <strong class="text-brand">Rp ${dailyTotal.toLocaleString()}</strong>
+                             </div>`;
+              dailyTotal = 0;
+            }
+            currentDay = orderDate;
+            html += `<h5 class="fw-bold mt-5 mb-3"><i class="bi bi-calendar3 me-2"></i> Hari: ${currentDay}</h5>`;
+          }
+
+          dailyTotal += order.total_price;
+
+          html += `
+                <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge ${order.status === "Completed" ? "bg-success" : "bg-warning"} mb-2">${order.status}</span>
+                                <h6 class="mb-1 fw-bold">Antrean: ${order.queue_number}</h6>
+                                <small class="text-muted">${localDateObj.toLocaleTimeString("id-ID")}</small>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold text-brand">Rp ${order.total_price.toLocaleString()}</div>
+                                <button class="btn btn-sm btn-outline-secondary mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#detail-${order.id}">Detail</button>
+                            </div>
+                        </div>
+                        <div class="collapse mt-3" id="detail-${order.id}">
+                            <ul class="list-group list-group-flush small">
+                                ${order.order_items
+                                  .map(
+                                    (it) => `
+                                    <li class="list-group-item d-flex justify-content-between px-0">
+                                        <span>${it.quantity}x ${it.products.name}</span>
+                                        <span>Rp ${(it.quantity * it.price_at_purchase).toLocaleString()}</span>
+                                    </li>
+                                `,
+                                  )
+                                  .join("")}
+                            </ul>
+                        </div>
+                    </div>
+                </div>`;
+
+          if (index === data.length - 1) {
+            html += `<div class="alert alert-secondary d-flex justify-content-between mb-5 shadow-sm">
+                            <strong class="text-uppercase">Total Pendapatan ${currentDay}</strong>
+                            <strong class="text-brand">Rp ${dailyTotal.toLocaleString()}</strong>
+                         </div>`;
+          }
+        });
+        container.innerHTML = html;
+      }
+
+      // 2. LOAD LAPORAN VISUAL
       async function loadSalesReport() {
         const start = document.getElementById("start-date").value;
         const end = document.getElementById("end-date").value;
-
         const url = `${apiBaseUrl}/admin/sales-report?start_date=${start}&end_date=${end}`;
-        const res = await fetch(url);
-        const result = await res.json();
 
-        document.getElementById("stat-total-revenue").innerText =
-          `Rp ${result.total_period.toLocaleString()}`;
+        try {
+          const res = await fetch(url);
+          const result = await res.json();
 
-        const ctx = document.getElementById("salesChart").getContext("2d");
+          document.getElementById("stat-total-revenue").innerText =
+            `Rp ${result.total_period.toLocaleString()}`;
 
-        // Jika grafik sudah ada, hancurkan dulu sebelum buat baru (agar tidak tumpang tindih)
-        if (myChart) myChart.destroy();
+          const ctx = document.getElementById("salesChart").getContext("2d");
+          if (myChart) myChart.destroy();
 
-        myChart = new Chart(ctx, {
-          type: "line", // Bisa diganti 'bar'
-          data: {
-            labels: result.labels,
-            datasets: [
-              {
-                label: "Penjualan Harian (Rp)",
-                data: result.data,
-                borderColor: "#c85a2e",
-                backgroundColor: "rgba(200, 90, 46, 0.1)",
-                fill: true,
-                tension: 0.4,
-                borderWidth: 3,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: { beginAtZero: true },
+          // Jika data kosong, beri tahu user
+          if (result.data.length === 0) {
+            console.log("Data laporan kosong");
+          }
+
+          myChart = new Chart(ctx, {
+            type: "line",
+            data: {
+              labels: result.labels,
+              datasets: [
+                {
+                  label: "Penjualan (Rp)",
+                  data: result.data,
+                  borderColor: "#c85a2e",
+                  backgroundColor: "rgba(200, 90, 46, 0.1)",
+                  fill: true,
+                  tension: 0.4,
+                  borderWidth: 3,
+                },
+              ],
             },
-          },
-        });
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { beginAtZero: true } },
+            },
+          });
+        } catch (e) {
+          console.error("Gagal load grafik:", e);
+        }
       }
 
-      // Jalankan saat tab laporan diklik
+      // Event Listeners
       document
-        .getElementById("tab-report")
-        .addEventListener("click", loadSalesReport);
+        .getElementById("tab-transactions")
+        .addEventListener("click", loadTransactions);
+      document.getElementById("tab-report").addEventListener("click", () => {
+        // Beri sedikit delay agar tab muncul dulu sebelum gambar grafik
+        setTimeout(loadSalesReport, 200);
+      });
+
+      // Jalankan pertama kali
+      loadTransactions();
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
