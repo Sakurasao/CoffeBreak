@@ -227,7 +227,9 @@
     let dailyTotal = 0;
 
     data.forEach((order, index) => {
-        const orderDate = order.created_at.split('T')[0]; // Ambil YYYY-MM-DD
+        // Mengonversi waktu UTC dari database ke tanggal lokal (WIB) dalam format YYYY-MM-DD
+        const localDateObj = new Date(order.created_at);
+        const orderDate = localDateObj.toLocaleDateString('en-CA'); // en-CA menghasilkan format YYYY-MM-DD
 
         // Jika ganti hari (atau transaksi pertama)
         if (orderDate !== currentDay) {
