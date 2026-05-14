@@ -17,7 +17,7 @@
 
         body {
             background-color: var(--brand-bg);
-            font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: "Segoe UI", Roboto, sans-serif;
             color: #333;
             scroll-behavior: smooth;
         }
@@ -53,6 +53,7 @@
             background: #fff;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             transition: transform 0.2s;
+            height: 100%;
         }
         .card-menu:hover { transform: translateY(-5px); }
 
@@ -60,6 +61,7 @@
             width: 100%;
             aspect-ratio: 1 / 1;
             overflow: hidden;
+            background-color: #f8f9fa;
         }
         .card-img-top {
             width: 100%;
@@ -78,11 +80,11 @@
             padding: 0;
         }
 
-        /* --- Sidebar Cart Styling --- */
+        /* --- Sidebar Cart (Sticky) --- */
         .sticky-cart {
             position: sticky;
-            top: 100px; /* Menempel di bawah navbar saat scroll */
-            max-height: calc(100vh - 120px);
+            top: 90px;
+            max-height: calc(100vh - 110px);
             overflow-y: auto;
         }
         
@@ -90,11 +92,12 @@
             border-radius: 20px;
             border: none;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            background: #fff;
         }
 
         .cart-item-row {
             border-bottom: 1px dashed #ddd;
-            padding: 10px 0;
+            padding: 12px 0;
         }
 
         .btn-qty {
@@ -108,31 +111,8 @@
             font-size: 0.8rem;
         }
 
-        /* Animasi Transisi Kolom */
-        .transition-column {
-            transition: all 0.4s ease-in-out;
-        }
-
-        /* --- Perbaikan Layout agar tidak 'maksa' --- */
-        #menu-column {
-            transition: all 0.3s ease-in-out;
-            margin: 0 auto; /* Supaya tetap di tengah saat keranjang tidak ada */
-        }
-
-        /* Kunci ukuran maksimal card agar tidak membesar saat layar lebar */
-        .card-menu {
-            max-width: 300px; /* Ukuran ideal kartu menu */
-            margin: 0 auto;   /* Center kartu di dalam kolomnya */
-            border: none;
-            border-radius: 20px;
-            background: #fff;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-
-        /* Container utama dibatasi agar tidak terlalu melar ke samping */
-        main.container-fluid {
-            max-width: 1400px; 
-        }
+        /* Layout Transition */
+        .transition-column { transition: all 0.3s ease-in-out; }
 
         footer { background-color: var(--brand-dark); color: #fff; }
     </style>
@@ -152,7 +132,7 @@
                 <ul class="navbar-nav ms-auto fw-medium">
                     <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
                     <li class="nav-item"><a class="nav-link active" href="#menu">Order</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#about">Our Story</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
                 </ul>
             </div>
         </div>
@@ -161,7 +141,7 @@
     <header class="py-5 bg-white mb-4 shadow-sm">
         <div class="container text-center">
             <h1 class="display-4 fw-bold">Tradisi <span class="text-brand">Lokal</span></h1>
-            <p class="lead text-muted">Pesan kopi favoritmu dengan sistem antrean digital.</p>
+            <p class="lead text-muted">Nikmati jeda sejenak dengan kopi otentik Sidoarjo.</p>
         </div>
     </header>
 
@@ -170,17 +150,17 @@
         <div id="announcement-section" class="container mb-5 d-none">
             <div class="p-4 rounded-4 bg-white shadow-sm border-start border-brand border-5">
                 <h5 class="text-brand fw-bold mb-2"><i class="bi bi-megaphone-fill me-2"></i>Warta Sabar</h5>
-                <p id="text-pengumuman" class="mb-1"></p>
+                <p id="text-pengumuman" class="mb-1 fw-medium"></p>
                 <small id="text-jadwal" class="text-muted"></small>
             </div>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             
-            <div id="menu-column" class="col-12 transition-column">
+            <div id="menu-column" class="col-lg-8 transition-column">
                 <section id="menu">
-                    <div class="d-flex justify-content-between align-items-center mb-4 px-2">
-                        <h2 class="fw-bold text-brand mb-0">Menu Pilihan</h2>
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 px-2">
+                        <h2 class="fw-bold text-brand mb-3 mb-md-0">Menu Pilihan</h2>
                         <div id="group-buttons" class="d-flex gap-2 overflow-auto pb-2">
                             </div>
                     </div>
@@ -188,14 +168,15 @@
                     <div id="menu-cards" class="row g-3">
                         <div class="col-12 text-center py-5">
                             <div class="spinner-border text-brand" role="status"></div>
+                            <p class="mt-2 text-muted">Menyiapkan menu...</p>
                         </div>
                     </div>
                 </section>
             </div>
 
-            <div id="cart-column" class="col-md-4 d-none transition-column">
+            <div id="cart-column" class="col-md-4 transition-column">
                 <div class="sticky-cart">
-                    <div id="cart-summary" class="card">
+                    <div id="cart-summary" class="card shadow-sm">
                         <div class="card-body p-4">
                             <h5 class="fw-bold mb-4 border-bottom pb-2">
                                 <i class="bi bi-bag-heart-fill text-brand me-2"></i>Pesanan Kamu
@@ -224,27 +205,40 @@
 
         </div>
 
-        <div class="container">
-            <section id="about" class="row py-5 mt-5 align-items-center border-top">
+        <div class="container mt-5 pt-5">
+            <section id="about" class="row py-5 align-items-center border-top">
                 <div class="col-md-6 mb-4">
-                    <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=1000&auto=format&fit=crop" class="img-fluid rounded-4 shadow-lg" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover;" alt="About" />
+                    <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=1000&auto=format&fit=crop" 
+                         class="img-fluid rounded-4 shadow-lg" 
+                         style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover;" 
+                         alt="About Sabar Coffee" />
                 </div>
                 <div class="col-md-6">
                     <span class="badge bg-brand mb-2">Our Heritage</span>
                     <h2 class="fw-bold mb-4">Sidoarjo Berawal Dari Kesabaran</h2>
-                    <p><strong>Sabar Coffee</strong> menggabungkan rasa tradisional dengan sistem <strong>Full-Stack Digital</strong> untuk efisiensi antrean yang transparan.</p>
+                    <p class="text-dark"><strong>Sabar Coffee</strong> adalah perwujudan dari rasa cinta kami terhadap kopi nusantara. Dimulai dari pojok kota Sidoarjo, kami menggabungkan rasa tradisional dengan sistem <strong>Full-Stack Digital</strong> untuk efisiensi antrean yang transparan.</p>
+                    <div class="row g-3 mt-4 text-center">
+                        <div class="col-6 p-3 bg-white rounded-4 shadow-sm border">
+                            <h4 class="fw-bold text-brand mb-0">20+</h4>
+                            <small class="text-muted">Menu Nusantara</small>
+                        </div>
+                        <div class="col-6 p-3 bg-white rounded-4 shadow-sm border">
+                            <h4 class="fw-bold text-brand mb-0">100%</h4>
+                            <small class="text-muted">Digital Service</small>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>
 
     </main>
 
-    <footer class="py-4 mt-5">
-    <div class="container text-center">
-        <p class="mb-0 small opacity-50">&copy; 2026 Sabar Coffee.</p>
-        <a href="admin/admin.html" class="text-muted" style="text-decoration:none; font-size: 8px;">.</a>
-    </div>
-</footer>
+    <footer class="py-4 mt-5 border-top bg-brand text-white">
+        <div class="container text-center">
+            <h6 class="fw-bold mb-1">SABAR COFFEE</h6>
+            <p class="mb-0 small opacity-75">&copy; 2026 Sidoarjo Digital Service. Crafted with Heart.</p>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -254,26 +248,31 @@
 
         async function initDashboard() {
             try {
+                // Load Info
                 const resInfo = await fetch(`${apiBaseUrl}/info`);
                 const dataInfo = await resInfo.json();
                 if (dataInfo.pengumuman) {
                     document.getElementById("announcement-section").classList.remove("d-none");
                     document.getElementById("text-pengumuman").innerText = dataInfo.pengumuman;
-                    document.getElementById("text-jadwal").innerText = dataInfo.jadwal_buka;
+                    document.getElementById("text-jadwal").innerText = `Jadwal: ${dataInfo.jadwal_buka}`;
                 }
 
+                // Load Menu
                 const resMenu = await fetch(`${apiBaseUrl}/menu`);
                 menuData = await resMenu.json();
+                
                 renderCategoryButtons();
                 renderCards();
-            } catch (err) { console.error(err); }
+                updateCartUI(); // Inisialisasi tampilan keranjang kosong
+            } catch (err) { console.error("Init Error:", err); }
         }
 
         function renderCategoryButtons() {
             const categories = ["Semua", ...new Set(menuData.map(m => m.category))];
             const container = document.getElementById("group-buttons");
             container.innerHTML = categories.map(cat => `
-                <button class="btn btn-category ${cat === 'Semua' ? 'active' : ''}" onclick="filterMenu('${cat}', this)">${cat}</button>
+                <button class="btn btn-category ${cat === 'Semua' ? 'active' : ''}" 
+                        onclick="filterMenu('${cat}', this)">${cat}</button>
             `).join("");
         }
 
@@ -288,13 +287,13 @@
             const items = filter ? menuData.filter(m => m.category === filter) : menuData;
             
             container.innerHTML = items.map(item => `
-                <div class="col-6 col-md-4 col-xl-3">
-                    <div class="card card-menu h-100">
+                <div class="col-6 col-md-4">
+                    <div class="card card-menu">
                         <div class="card-img-container">
-                            <img src="${item.image_url}" class="card-img-top" alt="${item.name}">
+                            <img src="${item.image_url}" class="card-img-top" alt="${item.name}" loading="lazy">
                         </div>
                         <div class="card-body d-flex flex-column p-3">
-                            <h6 class="fw-bold mb-1 text-truncate">${item.name}</h6>
+                            <h6 class="fw-bold mb-1 text-truncate" title="${item.name}">${item.name}</h6>
                             <p class="small text-muted mb-3">${item.category}</p>
                             <div class="mt-auto d-flex justify-content-between align-items-center">
                                 <span class="fw-bold text-brand small">Rp ${item.price.toLocaleString()}</span>
@@ -308,6 +307,7 @@
             `).join("");
         }
 
+        // --- Logic Cart ---
         function addToCart(id) {
             const item = menuData.find(m => m.id === id);
             if (!cart[id]) cart[id] = { ...item, qty: 1 };
@@ -329,43 +329,45 @@
         }
 
         function updateCartUI() {
-    const menuCol = document.getElementById("menu-column");
-    const cartCol = document.getElementById("cart-column");
-    const list = document.getElementById("cart-items");
-    const items = Object.values(cart);
+            const list = document.getElementById("cart-items");
+            const items = Object.values(cart);
 
-    if (items.length > 0) {
-        // SAAT ADA ITEM: Menu di kiri (col-8), Keranjang di kanan (col-4)
-        menuCol.classList.remove("col-lg-10", "mx-auto"); // Hapus settingan tengah
-        menuCol.classList.add("col-lg-8");
-        cartCol.classList.remove("d-none");
-        
-        list.innerHTML = items.map(it => `
-            <div class="cart-item-row d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="fw-bold small d-block">${it.name}</span>
-                    <span class="text-brand extra-small fw-bold">Rp ${it.price.toLocaleString()}</span>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                    <button class="btn btn-outline-secondary btn-qty" onclick="decreaseQty(${it.id})">-</button>
-                    <span class="small fw-bold">${it.qty}</span>
-                    <button class="btn btn-outline-secondary btn-qty" onclick="addToCart(${it.id})">+</button>
-                    <button class="btn text-danger ms-2" onclick="removeFromCart(${it.id})"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>
-        `).join("");
+            if (items.length > 0) {
+                list.innerHTML = items.map(it => `
+                    <div class="cart-item-row d-flex justify-content-between align-items-center">
+                        <div style="max-width: 55%;">
+                            <span class="fw-bold small d-block text-truncate">${it.name}</span>
+                            <span class="text-brand extra-small fw-bold">Rp ${it.price.toLocaleString()}</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-1">
+                            <button class="btn btn-outline-secondary btn-qty" onclick="decreaseQty(${it.id})">-</button>
+                            <span class="small fw-bold px-1">${it.qty}</span>
+                            <button class="btn btn-outline-secondary btn-qty" onclick="addToCart(${it.id})">+</button>
+                            <button class="btn text-danger ms-1 p-0 border-0 bg-transparent" onclick="removeFromCart(${it.id})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join("");
 
-        const total = items.reduce((acc, it) => acc + it.qty * it.price, 0);
-        document.getElementById("total-price").innerText = `Rp ${total.toLocaleString()}`;
-    } else {
-        // SAAT KOSONG: Menu tetap di ukuran yang sama (col-lg-10) tapi di TENGAH
-        menuCol.classList.remove("col-lg-8");
-        menuCol.classList.add("col-lg-10", "mx-auto"); // Gunakan col-10 agar tidak terlalu lebar & mx-auto agar tengah
-        cartCol.classList.add("d-none");
-    }
-}
+                const total = items.reduce((acc, it) => acc + it.qty * it.price, 0);
+                document.getElementById("total-price").innerText = `Rp ${total.toLocaleString()}`;
+            } else {
+                list.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="bi bi-cart text-muted opacity-25" style="font-size: 3rem;"></i>
+                        <p class="text-muted small mt-2">Keranjang belanja kosong.<br>Silakan pilih menu favoritmu.</p>
+                    </div>
+                `;
+                document.getElementById("total-price").innerText = `Rp 0`;
+            }
+        }
 
+        // --- Kirim Order ---
         document.getElementById("btn-order").addEventListener("click", async () => {
+            const items = Object.values(cart);
+            if (items.length === 0) return alert("Keranjang masih kosong!");
+            
             const btn = document.getElementById("btn-order");
             btn.disabled = true;
             btn.innerText = "Mengirim...";
@@ -373,8 +375,8 @@
             const queueNum = "Q-" + Math.floor(1000 + Math.random() * 9000);
             const payload = {
                 queue: queueNum,
-                items: Object.values(cart).map(it => ({ id: it.id, qty: it.qty, price: it.price })),
-                total: Object.values(cart).reduce((acc, it) => acc + it.qty * it.price, 0)
+                items: items.map(it => ({ id: it.id, qty: it.qty, price: it.price })),
+                total: items.reduce((acc, it) => acc + it.qty * it.price, 0)
             };
 
             try {
@@ -385,17 +387,22 @@
                 });
                 if (res.ok) {
                     const alertEl = document.getElementById("order-alert");
-                    alertEl.innerHTML = `Sukses! Nomor Antrean: <strong>${queueNum}</strong>.`;
+                    alertEl.innerHTML = `<i class="bi bi-check-circle-fill me-2"></i>Sukses! Antrean: <strong>${queueNum}</strong>. Silakan bayar di kasir.`;
                     alertEl.classList.remove("d-none");
                     cart = {};
-                    setTimeout(() => { updateCartUI(); alertEl.classList.add("d-none"); }, 5000);
+                    updateCartUI();
+                    setTimeout(() => { alertEl.classList.add("d-none"); }, 8000);
                 }
-            } catch (err) { alert("Gagal mengirim pesanan."); }
+            } catch (err) { alert("Dapur sedang sibuk, coba lagi nanti."); }
             finally { btn.disabled = false; btn.innerText = "Kirim Pesanan"; }
         });
 
         document.getElementById("btn-cancel").addEventListener("click", () => {
-            cart = {}; updateCartUI();
+            if(confirm("Batalkan semua pesanan?")) {
+                cart = {}; 
+                updateCartUI();
+                document.getElementById("order-alert").classList.add("d-none");
+            }
         });
 
         initDashboard();
