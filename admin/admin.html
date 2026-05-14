@@ -110,9 +110,17 @@
               </div>
             </div>
 
-            <div class="tab-pane fade" id="content-orders">
-              <h2 class="fw-bold mb-4">Laporan Penjualan</h2>
-              <div id="list-transactions"></div>
+            <div class="tab-pane fade show active" id="content-transactions">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="fw-bold">Histori Transaksi</h2>
+                    <div class="d-flex gap-2">
+                        <input type="date" id="filter-date-trans" class="form-control form-control-sm">
+                        <button class="btn btn-sm btn-brand" onclick="loadTransactions()">Filter</button>
+                    </div>
+                </div>
+                
+                <div id="transaction-container">
+                    </div>
             </div>
 
             <div class="tab-pane fade" id="content-report">
@@ -201,29 +209,88 @@
       }
 
       async function loadTransactions() {
-        const res = await fetch(`${apiBaseUrl}/admin/transactions`);
-        const data = await res.json();
-        const container = document.getElementById("list-transactions");
+    const filterDate = document.getElementById('filter-date-trans').value;
+    let url = `${apiBaseUrl}/admin/transactions`;
+    if (filterDate) url += `?date=${filterDate}`;
 
-        container.innerHTML = data
-          .map(
-            (order) => `
-            <div class="card mb-3 p-3">
-                <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
-                    <span class="fw-bold text-brand">Antrean: ${order.queue_number}</span>
-                    <span class="text-muted small">${new Date(order.created_at).toLocaleString("id-ID")}</span>
+    const res = await fetch(url);
+    const data = await res.json();
+    const container = document.getElementById('transaction-container');
+    
+    if (data.length === 0) {
+        container.innerHTML = '<p class="text-center py-5 text-muted">Tidak ada transaksi ditemukan.</p>';
+        return;
+    }
+
+    let html = '';
+    let currentDay = '';
+    let dailyTotal = 0;
+
+    data.forEach((order, index) => {
+        const orderDate = order.created_at.split('T')[0]; // Ambil YYYY-MM-DD
+
+        // Jika ganti hari (atau transaksi pertama)
+        if (orderDate !== currentDay) {
+            // Tampilkan total hari sebelumnya (kecuali untuk hari pertama yang muncul)
+            if (currentDay !== '') {
+                html += `
+                    <div class="alert alert-secondary d-flex justify-content-between mb-5 shadow-sm">
+                        <strong class="text-uppercase">Total Pendapatan ${currentDay}</strong>
+                        <strong class="text-brand">Rp ${dailyTotal.toLocaleString()}</strong>
+                    </div>`;
+                dailyTotal = 0; // Reset total harian
+            }
+
+            currentDay = orderDate;
+            html += `<h5 class="fw-bold mt-5 mb-3"><i class="bi bi-calendar3 me-2"></i> Hari: ${currentDay}</h5>`;
+        }
+
+        dailyTotal += order.total_price;
+
+        // Render Card Transaksi
+        html += `
+            <div class="card mb-3 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge ${order.status === 'Completed' ? 'bg-success' : 'bg-warning'} mb-2">
+                                ${order.status}
+                            </span>
+                            <h6 class="mb-1 fw-bold">Antrean: ${order.queue_number}</h6>
+                            <small class="text-muted">${new Date(order.created_at).toLocaleTimeString()}</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-bold text-brand">Rp ${order.total_price.toLocaleString()}</div>
+                            <button class="btn btn-sm btn-outline-secondary mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#detail-${order.id}">
+                                Detail
+                            </button>
+                        </div>
+                    </div>
+                    <div class="collapse mt-3" id="detail-${order.id}">
+                        <ul class="list-group list-group-flush small">
+                            ${order.order_items.map(it => `
+                                <li class="list-group-item d-flex justify-content-between px-0">
+                                    <span>${it.quantity}x ${it.products.name}</span>
+                                    <span>Rp ${(it.quantity * it.price_at_purchase).toLocaleString()}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
                 </div>
-                <div class="small">
-                    ${order.order_items.map((it) => `<div>- ${it.products.name} (${it.quantity}x)</div>`).join("")}
-                </div>
-                <div class="text-end mt-2 fw-bold border-top pt-2">
-                    Total: Rp ${order.total_price.toLocaleString()}
-                </div>
-            </div>
-        `,
-          )
-          .join("");
-      }
+            </div>`;
+        
+        // Jika ini adalah data terakhir, tampilkan total hari tersebut
+        if (index === data.length - 1) {
+            html += `
+                <div class="alert alert-secondary d-flex justify-content-between mb-5 shadow-sm">
+                    <strong class="text-uppercase">Total Pendapatan ${currentDay}</strong>
+                    <strong class="text-brand">Rp ${dailyTotal.toLocaleString()}</strong>
+                </div>`;
+        }
+    });
+
+    container.innerHTML = html;
+}
 
       // Init
       loadStock();
