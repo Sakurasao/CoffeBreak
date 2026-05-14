@@ -4,17 +4,26 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Barista Station - Sabar Coffee</title>
+    
+    <link rel="icon" type="image/x-icon" href="../Asset/favicon.ico">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
     <style>
         :root { --brand: #c85a2e; }
         body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
-        .order-card { border: none; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
-        .order-card.first { border: 3px solid var(--brand); }
-        .badge-urutan { position: absolute; top: 0; right: 0; background: var(--brand); color: white; padding: 5px 15px; border-bottom-left-radius: 15px; font-weight: bold; }
-        .queue-number { font-size: 2.2rem; font-weight: 800; color: #333; margin-top: 10px; }
-        .btn-finish { background: var(--brand); color: white; font-weight: bold; padding: 12px; border-radius: 10px; border: none; }
-        .item-list { background: #f8f9fa; border-radius: 10px; padding: 15px; }
+        
+        /* Kartu Pesanan */
+        .order-card { border: none; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; overflow: hidden; transition: 0.3s; }
+        
+        /* Highlight untuk Pesanan Paling Lama (Prioritas #1) */
+        .order-card.priority { border: 3px solid var(--brand); transform: scale(1.02); }
+        
+        .badge-urutan { position: absolute; top: 0; left: 0; background: var(--brand); color: white; padding: 5px 15px; border-bottom-right-radius: 15px; font-weight: bold; z-index: 10; }
+        .queue-number { font-size: 2.2rem; font-weight: 800; color: #333; margin-top: 20px; }
+        .btn-finish { background: var(--brand); color: white; font-weight: bold; padding: 12px; border-radius: 10px; border: none; transition: 0.3s; }
+        .btn-finish:hover { background: #a64a26; }
+        .item-list { background: #f8f9fa; border-radius: 10px; padding: 15px; text-align: left; }
     </style>
 </head>
 <body>
@@ -22,91 +31,101 @@
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="fw-bold mb-0 text-brand"><i class="bi bi-cup-hot-fill me-2"></i>Antrean Barista</h2>
-            <p class="text-muted small">Pesanan diproses berdasarkan urutan waktu masuk.</p>
+            <h2 class="fw-bold mb-0 text-brand"><i class="bi bi-cup-hot-fill me-2"></i>Barista Station</h2>
+            <p class="text-muted small">Pesanan Terlama (Prioritas) akan muncul di urutan #1.</p>
         </div>
         <div class="text-end">
-            <div id="status-badge" class="badge bg-success">Sistem Online</div>
-            <div class="small text-muted mt-1" id="last-update">Update: -</div>
+            <div id="status-badge" class="badge bg-success">Sistem Aktif</div>
+            <div class="small text-muted mt-1" id="last-sync">Terakhir sinkron: -</div>
         </div>
     </div>
 
     <div id="barista-list" class="row g-4">
+        <div class="col-12 text-center py-5">
+            <div class="spinner-border text-brand" role="status"></div>
+            <p class="mt-2 text-muted">Menyambungkan ke database...</p>
         </div>
+    </div>
 </div>
 
 <script>
     const apiBaseUrl = 'https://sakurasao-coffebreakapi.hf.space';
 
-    async function loadPendingOrders() {
+    async function loadBaristaOrders() {
         try {
-            // Kita tambah parameter 'order=created_at.asc' agar pesanan paling lama muncul pertama
+            // MENGURUTKAN: Kita ambil data yang statusnya Pending dan diurutkan dari yang paling lama (asc)
             const res = await fetch(`${apiBaseUrl}/admin/transactions`);
             const data = await res.json();
-            const list = document.getElementById('barista-list');
             
             // Filter hanya yang 'Pending'
-            const pending = data.filter(o => o.status === 'Pending');
+            let pendingOrders = data.filter(o => o.status === 'Pending');
 
-            if(pending.length === 0) {
-                list.innerHTML = '<div class="col-12 text-center py-5"><i class="bi bi-check-all text-muted" style="font-size: 4rem;"></i><h4 class="text-muted">Semua pesanan sudah disajikan.</h4></div>';
+            // URUTKAN SECARA MANUAL (FIFO): Berdasarkan waktu dibuat (paling lama ke paling baru)
+            pendingOrders.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+            const list = document.getElementById('barista-list');
+            
+            if(pendingOrders.length === 0) {
+                list.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="bi bi-emoji-smile text-muted" style="font-size: 3rem;"></i>
+                        <h4 class="text-muted mt-3">Belum ada pesanan masuk.</h4>
+                    </div>`;
                 return;
             }
 
-            list.innerHTML = pending.map((order, index) => `
+            list.innerHTML = pendingOrders.map((order, index) => `
                 <div class="col-md-4">
-                    <div class="card order-card h-100 ${index === 0 ? 'first' : ''}">
-                        <div class="badge-urutan">Urutan #${index + 1}</div>
+                    <div class="card order-card h-100 ${index === 0 ? 'priority' : ''}">
+                        <div class="badge-urutan">Antrean #${index + 1}</div>
                         <div class="card-body text-center pt-4">
-                            <div class="text-muted small">Panggil Antrean:</div>
                             <div class="queue-number">${order.queue_number}</div>
-                            <div class="small text-muted mb-3">${new Date(order.created_at).toLocaleTimeString('id-ID')}</div>
+                            <div class="small text-muted mb-3"><i class="bi bi-clock me-1"></i> Masuk: ${new Date(order.created_at).toLocaleTimeString('id-ID')}</div>
                             
-                            <div class="item-list text-start mb-4">
-                                ${order.order_items.map(it => `
-                                    <div class="d-flex justify-content-between border-bottom py-1 mb-1">
-                                        <span><strong>${it.quantity}x</strong> ${it.products.name}</span>
-                                    </div>
-                                `).join('')}
+                            <div class="item-list mb-4">
+                                <ul class="list-unstyled mb-0">
+                                    ${order.order_items.map(it => `
+                                        <li class="d-flex justify-content-between mb-2">
+                                            <span><strong>${it.quantity}x</strong> ${it.products.name}</span>
+                                        </li>
+                                    `).join('')}
+                                </ul>
                             </div>
 
-                            <button class="btn btn-finish w-100 shadow-sm" onclick="finishOrder(${order.id}, '${order.queue_number}')">
-                                <i class="bi bi-check-circle me-2"></i>Selesai & Panggil
+                            <button class="btn btn-finish w-100 shadow" onclick="completeAndCall(${order.id}, '${order.queue_number}')">
+                                <i class="bi bi-check-lg me-2"></i>Selesai & Panggil
                             </button>
                         </div>
                     </div>
                 </div>
             `).join('');
 
-            document.getElementById('last-update').innerText = 'Update: ' + new Date().toLocaleTimeString();
+            document.getElementById('last-sync').innerText = 'Terakhir sinkron: ' + new Date().toLocaleTimeString('id-ID');
         } catch (err) {
             document.getElementById('status-badge').className = 'badge bg-danger';
-            document.getElementById('status-badge').innerText = 'Koneksi Terputus';
+            document.getElementById('status-badge').innerText = 'Koneksi Error';
         }
     }
 
-    async function finishOrder(id, num) {
-        // Konfirmasi agar tidak salah klik
-        if(!confirm(`Pesanan ${num} siap disajikan?`)) return;
-        
+    async function completeAndCall(orderId, queueNum) {
+        if(!confirm(`Konfirmasi pesanan ${queueNum} sudah selesai disiapkan?`)) return;
+
         try {
-            const res = await fetch(`${apiBaseUrl}/admin/order-complete/${id}`, { method: 'PATCH' });
+            const res = await fetch(`${apiBaseUrl}/admin/order-complete/${orderId}`, { method: 'PATCH' });
             if(res.ok) {
-                // Suara Panggilan Otomatis
-                const speech = new SpeechSynthesisUtterance(`Pesanan nomor antrean ${num}, silakan diambil.`);
-                speech.lang = 'id-ID';
-                window.speechSynthesis.speak(speech);
-                
-                loadPendingOrders();
+                // Suara Panggilan Otomatis agar customer dengar
+                const voice = new SpeechSynthesisUtterance(`Panggilan untuk nomor antrean ${queueNum}. Pesanan Anda sudah siap.`);
+                voice.lang = 'id-ID';
+                window.speechSynthesis.speak(voice);
+
+                loadBaristaOrders(); // Refresh list agar kartu yang selesai hilang
             }
-        } catch (err) {
-            alert("Gagal mengupdate status.");
-        }
+        } catch (err) { alert("Gagal memproses pesanan."); }
     }
 
-    // Refresh otomatis setiap 15 detik agar barista tahu jika ada pesanan baru masuk
-    setInterval(loadPendingOrders, 15000);
-    loadPendingOrders();
+    // Auto-refresh setiap 10 detik agar barista selalu dapat update terbaru
+    setInterval(loadBaristaOrders, 10000);
+    loadBaristaOrders();
 </script>
 </body>
 </html>
