@@ -1,83 +1,180 @@
 <!doctype html>
 <html lang="id">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Admin - Sabar Coffee</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
-    <link rel="icon" type="image/x-icon" href="../Asset/favicon.ico">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css"
+    />
+    <link rel="icon" type="image/x-icon" href="../Asset/favicon.ico" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        :root { --brand: #c85a2e; --bg: #f8f9fa; }
-        body { background-color: var(--bg); font-family: 'Segoe UI', sans-serif; }
-        .sidebar { background: #fff; min-height: 100vh; border-right: 1px solid #ddd; }
-        .nav-link { color: #333; padding: 15px; border-radius: 10px; margin-bottom: 5px; }
-        .nav-link.active { background: var(--brand); color: #fff !important; }
-        .card { border: none; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .btn-brand { background: var(--brand); color: #fff; }
+      :root {
+        --brand: #c85a2e;
+        --bg: #f8f9fa;
+      }
+      body {
+        background-color: var(--bg);
+        font-family: "Segoe UI", sans-serif;
+      }
+      .sidebar {
+        background: #fff;
+        min-height: 100vh;
+        border-right: 1px solid #ddd;
+      }
+      .nav-link {
+        color: #333;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 5px;
+      }
+      .nav-link.active {
+        background: var(--brand);
+        color: #fff !important;
+      }
+      .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+      .btn-brand {
+        background: var(--brand);
+        color: #fff;
+      }
     </style>
-</head>
-<body>
-
-<div class="container-fluid">
-    <div class="row">
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
         <nav class="col-md-2 d-none d-md-block sidebar p-3">
-            <h4 class="fw-bold text-brand mb-4">Sabar Admin</h4>
-            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist">
-                <button class="nav-link active w-100 text-start" id="tab-stock" data-bs-toggle="pill" data-bs-target="#content-stock">
-                    <i class="bi bi-box-seam me-2"></i> Stok Menu
-                </button>
-                <button class="nav-link w-100 text-start" id="tab-orders" data-bs-toggle="pill" data-bs-target="#content-orders">
-                    <i class="bi bi-receipt me-2"></i> Transaksi
-                </button>
-                <hr>
-                <a href="../index.html" class="nav-link text-danger"><i class="bi bi-box-arrow-left me-2"></i> Ke Toko</a>
-            </div>
+          <h4 class="fw-bold text-brand mb-4">Sabar Admin</h4>
+          <div
+            class="nav flex-column nav-pills"
+            id="v-pills-tab"
+            role="tablist"
+          >
+            <button
+              class="nav-link active w-100 text-start"
+              id="tab-stock"
+              data-bs-toggle="pill"
+              data-bs-target="#content-stock"
+            >
+              <i class="bi bi-box-seam me-2"></i> Stok Menu
+            </button>
+            <button
+              class="nav-link w-100 text-start"
+              id="tab-orders"
+              data-bs-toggle="pill"
+              data-bs-target="#content-orders"
+            >
+              <i class="bi bi-receipt me-2"></i> Transaksi
+            </button>
+            <button
+              class="nav-link w-100 text-start"
+              id="tab-report"
+              data-bs-toggle="pill"
+              data-bs-target="#content-report"
+            >
+              <i class="bi bi-graph-up-arrow me-2"></i> Laporan Visual
+            </button>
+            <hr />
+            <a href="../index.html" class="nav-link text-danger"
+              ><i class="bi bi-box-arrow-left me-2"></i> Ke Toko</a
+            >
+          </div>
         </nav>
 
         <main class="col-md-10 p-4">
-            <div class="tab-content" id="v-pills-tabContent">
-                
-                <div class="tab-pane fade show active" id="content-stock">
-                    <h2 class="fw-bold mb-4">Manajemen Stok Barang</h2>
-                    <div class="card p-3">
-                        <table class="table align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Menu</th>
-                                    <th>Kategori</th>
-                                    <th>Stok Saat Ini</th>
-                                    <th width="200">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-stock"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="tab-pane fade" id="content-orders">
-                    <h2 class="fw-bold mb-4">Laporan Penjualan</h2>
-                    <div id="list-transactions"></div>
-                </div>
-
+          <div class="tab-content" id="v-pills-tabContent">
+            <div class="tab-pane fade show active" id="content-stock">
+              <h2 class="fw-bold mb-4">Manajemen Stok Barang</h2>
+              <div class="card p-3">
+                <table class="table align-middle">
+                  <thead>
+                    <tr>
+                      <th>Menu</th>
+                      <th>Kategori</th>
+                      <th>Stok Saat Ini</th>
+                      <th width="200">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="table-stock"></tbody>
+                </table>
+              </div>
             </div>
+
+            <div class="tab-pane fade" id="content-orders">
+              <h2 class="fw-bold mb-4">Laporan Penjualan</h2>
+              <div id="list-transactions"></div>
+            </div>
+
+            <div class="tab-pane fade" id="content-report">
+              <h2 class="fw-bold mb-4">Analisis Penjualan</h2>
+
+              <div class="card p-4 mb-4">
+                <div class="row g-3 align-items-end mb-4">
+                  <div class="col-md-4">
+                    <label class="small fw-bold">Dari Tanggal</label>
+                    <input type="date" id="start-date" class="form-control" />
+                  </div>
+                  <div class="col-md-4">
+                    <label class="small fw-bold">Sampai Tanggal</label>
+                    <input type="date" id="end-date" class="form-control" />
+                  </div>
+                  <div class="col-md-4">
+                    <button
+                      class="btn btn-brand w-100"
+                      onclick="loadSalesReport()"
+                    >
+                      Filter & Update
+                    </button>
+                  </div>
+                </div>
+
+                <div class="row text-center mb-4">
+                  <div class="col-md-12">
+                    <div class="p-3 bg-light rounded-3">
+                      <h6 class="text-muted mb-1">
+                        Total Pendapatan (Periode Ini)
+                      </h6>
+                      <h3 class="fw-bold text-brand" id="stat-total-revenue">
+                        Rp 0
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="height: 400px">
+                  <canvas id="salesChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
         </main>
+      </div>
     </div>
-</div>
 
-<script>
-    const apiBaseUrl = 'https://sakurasao-coffebreakapi.hf.space';
+    <script>
+      const apiBaseUrl = "https://sakurasao-coffebreakapi.hf.space";
 
-    async function loadStock() {
+      async function loadStock() {
         const res = await fetch(`${apiBaseUrl}/menu`);
         const data = await res.json();
-        const tbody = document.getElementById('table-stock');
-        tbody.innerHTML = data.map(item => `
+        const tbody = document.getElementById("table-stock");
+        tbody.innerHTML = data
+          .map(
+            (item) => `
             <tr>
                 <td><strong>${item.name}</strong></td>
                 <td><span class="badge bg-light text-dark">${item.category}</span></td>
-                <td><span class="fw-bold ${item.stock < 10 ? 'text-danger' : ''}">${item.stock}</span></td>
+                <td><span class="fw-bold ${item.stock < 10 ? "text-danger" : ""}">${item.stock}</span></td>
                 <td>
                     <div class="input-group input-group-sm">
                         <input type="number" id="input-${item.id}" class="form-control" placeholder="+/- stok">
@@ -85,48 +182,105 @@
                     </div>
                 </td>
             </tr>
-        `).join('');
-    }
+        `,
+          )
+          .join("");
+      }
 
-    async function updateStock(id) {
+      async function updateStock(id) {
         const newStock = document.getElementById(`input-${id}`).value;
-        if(!newStock) return alert("Isi jumlah stok!");
-        
+        if (!newStock) return alert("Isi jumlah stok!");
+
         await fetch(`${apiBaseUrl}/admin/update-stock/${id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ stock: parseInt(newStock) })
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ stock: parseInt(newStock) }),
         });
         alert("Stok diperbarui!");
         loadStock();
-    }
+      }
 
-    async function loadTransactions() {
+      async function loadTransactions() {
         const res = await fetch(`${apiBaseUrl}/admin/transactions`);
         const data = await res.json();
-        const container = document.getElementById('list-transactions');
-        
-        container.innerHTML = data.map(order => `
+        const container = document.getElementById("list-transactions");
+
+        container.innerHTML = data
+          .map(
+            (order) => `
             <div class="card mb-3 p-3">
                 <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
                     <span class="fw-bold text-brand">Antrean: ${order.queue_number}</span>
-                    <span class="text-muted small">${new Date(order.created_at).toLocaleString('id-ID')}</span>
+                    <span class="text-muted small">${new Date(order.created_at).toLocaleString("id-ID")}</span>
                 </div>
                 <div class="small">
-                    ${order.order_items.map(it => `<div>- ${it.products.name} (${it.quantity}x)</div>`).join('')}
+                    ${order.order_items.map((it) => `<div>- ${it.products.name} (${it.quantity}x)</div>`).join("")}
                 </div>
                 <div class="text-end mt-2 fw-bold border-top pt-2">
                     Total: Rp ${order.total_price.toLocaleString()}
                 </div>
             </div>
-        `).join('');
-    }
+        `,
+          )
+          .join("");
+      }
 
-    // Init
-    loadStock();
-    document.getElementById('tab-orders').addEventListener('click', loadTransactions);
-</script>
+      // Init
+      loadStock();
+      document
+        .getElementById("tab-orders")
+        .addEventListener("click", loadTransactions);
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+      let myChart = null;
+
+      async function loadSalesReport() {
+        const start = document.getElementById("start-date").value;
+        const end = document.getElementById("end-date").value;
+
+        const url = `${apiBaseUrl}/admin/sales-report?start_date=${start}&end_date=${end}`;
+        const res = await fetch(url);
+        const result = await res.json();
+
+        document.getElementById("stat-total-revenue").innerText =
+          `Rp ${result.total_period.toLocaleString()}`;
+
+        const ctx = document.getElementById("salesChart").getContext("2d");
+
+        // Jika grafik sudah ada, hancurkan dulu sebelum buat baru (agar tidak tumpang tindih)
+        if (myChart) myChart.destroy();
+
+        myChart = new Chart(ctx, {
+          type: "line", // Bisa diganti 'bar'
+          data: {
+            labels: result.labels,
+            datasets: [
+              {
+                label: "Penjualan Harian (Rp)",
+                data: result.data,
+                borderColor: "#c85a2e",
+                backgroundColor: "rgba(200, 90, 46, 0.1)",
+                fill: true,
+                tension: 0.4,
+                borderWidth: 3,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: { beginAtZero: true },
+            },
+          },
+        });
+      }
+
+      // Jalankan saat tab laporan diklik
+      document
+        .getElementById("tab-report")
+        .addEventListener("click", loadSalesReport);
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>
