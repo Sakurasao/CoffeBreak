@@ -80,8 +80,8 @@
                 <td><span class="fw-bold ${item.stock < 10 ? 'text-danger' : ''}">${item.stock}</span></td>
                 <td>
                     <div class="input-group input-group-sm">
-                        <input type="number" id="input-${item.id}" class="form-control" placeholder="Baru">
-                        <button class="btn btn-brand" onclick="updateStock(${item.id})">Update</button>
+                        <input type="number" id="input-${item.id}" class="form-control" placeholder="+/- stok">
+                        <button class="btn btn-brand" onclick="updateStock(${item.id})">Simpan</button>
                     </div>
                 </td>
             </tr>
