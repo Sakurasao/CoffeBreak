@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabar Coffee - Menu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <div class="container mt-5">
+        <h2 class="mb-4">Daftar Menu Sabar Coffee</h2>
+        
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Nama Menu</th>
+                            <th>Kategori</th>
+                            <th>Harga ($)</th>
+                            <th>Stok</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabel-menu">
+                        <tr>
+                            <td colspan="4" class="text-center">Sedang memuat data dari database...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Targetkan server FastAPI kamu yang sedang menyala di laptop
+        const apiUrl = 'https://sakurasao-coffebreakapi.hf.space/menu';
+
+        // 2. Buat fungsi untuk mengambil data
+        async function ambilDataMenu() {
+            try {
+                // Datang ke FastAPI untuk minta data JSON
+                const respon = await fetch(apiUrl);
+                const dataMenu = await respon.json();
+
+                // Cari elemen 'tbody' tempat kita akan menaruh baris tabel
+                const isiTabel = document.getElementById('tabel-menu');
+                
+                // Kosongkan dulu isi tabelnya (hapus tulisan loading)
+                isiTabel.innerHTML = '';
+
+                // 3. Lakukan perulangan: Untuk setiap menu, buatkan 1 baris (tr) baru
+                dataMenu.forEach(menu => {
+                    const baris = `
+                        <tr>
+                            <td class="fw-bold">${menu.name}</td>
+                            <td>${menu.category}</td>
+                            <td>${menu.price}</td>
+                            <td>${menu.stock}</td>
+                        </tr>
+                    `;
+                    // Masukkan baris tersebut ke dalam tabel
+                    isiTabel.innerHTML += baris;
+                });
+
+            } catch (error) {
+                console.error("Gagal mengambil data:", error);
+                document.getElementById('tabel-menu').innerHTML = `
+                    <tr><td colspan="4" class="text-danger text-center">Gagal memuat data. Pastikan server FastAPI menyala!</td></tr>
+                `;
+            }
+        }
+
+        // 4. Jalankan fungsinya saat halaman web pertama kali dibuka
+        ambilDataMenu();
+    </script>
+</body>
+</html>
