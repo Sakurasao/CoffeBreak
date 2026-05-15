@@ -9,85 +9,67 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
     <style>
         :root { --brand: #c85a2e; }
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
-        .card-unpaid { border-left: 5px solid #dc3545; border-radius: 15px; }
-        .btn-pay { background: #198754; color: white; font-weight: bold; }
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        .card-kasir { border: none; border-radius: 15px; border-top: 5px solid #dc3545; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .price-total { color: var(--brand); font-weight: 800; font-size: 1.3rem; }
+        .item-list { font-size: 0.9rem; border-top: 1px dashed #ddd; padding-top: 10px; }
+        @media print { body * { visibility: hidden; } #print-area, #print-area * { visibility: visible; } #print-area { position: absolute; left: 0; top: 0; width: 100%; } }
     </style>
 </head>
 <body>
-
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-dark"><i class="bi bi-cash-stack me-2 text-success"></i>Layar Kasir</h2>
-        <span class="badge bg-danger">Menunggu Pembayaran</span>
+        <h2 class="fw-bold"><i class="bi bi-wallet2 me-2 text-danger"></i>Layar Kasir</h2>
+        <span class="badge bg-danger">Status: Belum Bayar</span>
     </div>
+    <div id="kasir-list" class="row g-4"></div>
+</div>
 
-    <div id="unpaid-list" class="row g-3">
-        </div>
+<div id="print-area" class="d-none" style="width: 300px; font-family: monospace; padding: 20px;">
+    <center><h5>SABAR COFFEE</h5><p>Sidoarjo</p><hr></center>
+    <div id="struk-content"></div>
+    <hr><center><p>Terima Kasih!</p></center>
 </div>
 
 <script>
     const apiBaseUrl = "https://sakurasao-coffebreakapi.hf.space";
-
-    async function loadUnpaidOrders() {
+    async function loadUnpaid() {
         const res = await fetch(`${apiBaseUrl}/admin/transactions`);
         const data = await res.json();
-        const list = document.getElementById('unpaid-list');
-        
-        // Filter hanya yang statusnya Unpaid
+        const list = document.getElementById('kasir-list');
         const unpaid = data.filter(o => o.status === 'Unpaid');
-
-        if(unpaid.length === 0) {
-            list.innerHTML = '<div class="text-center py-5"><h5>Semua sudah bayar! 😎</h5></div>';
-            return;
-        }
-
+        if(unpaid.length === 0) { list.innerHTML = '<div class="text-center py-5 text-muted"><h5>Semua pesanan sudah lunas.</h5></div>'; return; }
         list.innerHTML = unpaid.map(order => `
-            <div class="col-md-6 col-lg-4">
-                <div class="card card-unpaid shadow-sm mb-3">
+            <div class="col-md-4">
+                <div class="card card-kasir h-100">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="fw-bold mb-0">#${order.queue_number}</h5>
-                            <span class="fw-bold text-danger">Rp ${order.total_price.toLocaleString()}</span>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge bg-dark">#${order.queue_number}</span>
+                            <span class="price-total">Rp ${order.total_price.toLocaleString()}</span>
                         </div>
-                        <ul class="small text-muted list-unstyled border-top pt-2">
-                            ${order.order_items.map(it => `<li>${it.quantity}x ${it.products.name}</li>`).join('')}
-                        </ul>
-                        <div class="d-flex gap-2 mt-2">
-                            <button class="btn btn-outline-danger w-50" onclick="cancelOrder(${order.id}, '${order.queue_number}')">
-                                <i class="bi bi-trash me-1"></i> Batal
-                            </button>
-                            <button class="btn btn-pay w-50" onclick="processPayment(${order.id})">
-                                <i class="bi bi-check-lg me-1"></i> Bayar
-                            </button>
+                        <div class="item-list mb-3 text-start">
+                            ${order.order_items.map(it => `
+                                <div class="d-flex justify-content-between">
+                                    <span>${it.quantity}x ${it.products.name}</span>
+                                    <span>Rp ${(it.quantity * it.price_at_purchase).toLocaleString()}</span>
+                                </div>`).join('')}
+                        </div>
+                        <button class="btn btn-success w-100 fw-bold mb-2" onclick="pay(${order.id}, '${order.queue_number}')">LUNASKAN</button>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-dark btn-sm w-50" onclick="printReceipt(${JSON.stringify(order).replace(/"/g, '&quot;')})"><i class="bi bi-printer"></i> Struk</button>
+                            <button class="btn btn-outline-danger btn-sm w-50" onclick="cancel(${order.id})"><i class="bi bi-trash"></i> Batal</button>
                         </div>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            </div>`).join('');
     }
-
-    async function processPayment(id) {
-        if(!confirm("Sudah terima uang dari pelanggan?")) return;
-        await fetch(`${apiBaseUrl}/admin/confirm-payment/${id}`, { method: 'PATCH' });
-        loadUnpaidOrders();
+    async function pay(id, q) { if(confirm(`Konfirmasi pembayaran antrean ${q}?`)) { await fetch(`${apiBaseUrl}/admin/confirm-payment/${id}`, {method:'PATCH'}); loadUnpaid(); } }
+    async function cancel(id) { if(confirm("Hapus pesanan dan kembalikan stok?")) { await fetch(`${apiBaseUrl}/admin/cancel-order/${id}`, {method:'DELETE'}); loadUnpaid(); } }
+    function printReceipt(o) {
+        document.getElementById('struk-content').innerHTML = `<p>Antrean: ${o.queue_number}</p><hr>${o.order_items.map(it=>`<div style="display:flex;justify-content:space-between"><span>${it.quantity}x ${it.products.name}</span><span>${(it.quantity*it.price_at_purchase).toLocaleString()}</span></div>`).join('')}<hr><div style="display:flex;justify-content:space-between"><b>TOTAL</b><b>Rp ${o.total_price.toLocaleString()}</b></div>`;
+        window.print();
     }
-
-    async function cancelOrder(id, num) {
-        if(!confirm(`Hapus pesanan #${num} dan kembalikan stok?`)) return;
-        try {
-            const res = await fetch(`${apiBaseUrl}/admin/cancel-order/${id}`, { method: 'DELETE' });
-            if(res.ok) {
-                alert(`Pesanan #${num} berhasil dihapus.`);
-                loadUnpaidOrders();
-            }
-        } catch (err) {
-            alert("Gagal menghapus pesanan.");
-        }
-    }
-
-    setInterval(loadUnpaidOrders, 5000);
-    loadUnpaidOrders();
+    setInterval(loadUnpaid, 5000); loadUnpaid();
 </script>
 </body>
 </html>

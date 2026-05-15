@@ -3,129 +3,55 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Barista Station - Sabar Coffee</title>
-    
+    <title>Barista - Sabar Coffee</title>
     <link rel="icon" type="image/x-icon" href="../Asset/favicon.ico">
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
     <style>
         :root { --brand: #c85a2e; }
         body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
-        
-        /* Kartu Pesanan */
-        .order-card { border: none; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; overflow: hidden; transition: 0.3s; }
-        
-        /* Highlight untuk Pesanan Paling Lama (Prioritas #1) */
-        .order-card.priority { border: 3px solid var(--brand); transform: scale(1.02); }
-        
-        .badge-urutan { position: absolute; top: 0; left: 0; background: var(--brand); color: white; padding: 5px 15px; border-bottom-right-radius: 15px; font-weight: bold; z-index: 10; }
-        .queue-number { font-size: 2.2rem; font-weight: 800; color: #333; margin-top: 20px; }
-        .btn-finish { background: var(--brand); color: white; font-weight: bold; padding: 12px; border-radius: 10px; border: none; transition: 0.3s; }
-        .btn-finish:hover { background: #a64a26; }
-        .item-list { background: #f8f9fa; border-radius: 10px; padding: 15px; text-align: left; }
+        .card-barista { border: none; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-top: 5px solid var(--brand); }
+        .queue-num { font-size: 2.2rem; font-weight: 800; color: #333; }
+        .btn-ready { background: var(--brand); color: white; font-weight: bold; }
     </style>
 </head>
 <body>
-
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold mb-0 text-brand"><i class="bi bi-cup-hot-fill me-2"></i>Barista Station</h2>
-            <p class="text-muted small">Pesanan Terlama (Prioritas) akan muncul di urutan #1.</p>
-        </div>
-        <div class="text-end">
-            <div id="status-badge" class="badge bg-success">Sistem Aktif</div>
-            <div class="small text-muted mt-1" id="last-sync">Terakhir sinkron: -</div>
-        </div>
+        <h2 class="fw-bold"><i class="bi bi-cup-hot-fill me-2 text-brand"></i>Barista - Antrean Dapur</h2>
+        <span class="badge bg-success">Status: Ready to Process</span>
     </div>
-
-    <div id="barista-list" class="row g-4">
-        <div class="col-12 text-center py-5">
-            <div class="spinner-border text-brand" role="status"></div>
-            <p class="mt-2 text-muted">Menyambungkan ke database...</p>
-        </div>
-    </div>
+    <div id="barista-list" class="row g-4"></div>
 </div>
-
 <script>
-    const apiBaseUrl = 'https://sakurasao-coffebreakapi.hf.space';
-
-    async function loadBaristaOrders() {
-        try {
-            // MENGURUTKAN: Kita ambil data yang statusnya Pending dan diurutkan dari yang paling lama (asc)
-            const res = await fetch(`${apiBaseUrl}/admin/transactions`);
-            const data = await res.json();
-            
-            // Filter hanya yang 'Pending'
-            let pendingOrders = data.filter(o => o.status === 'Pending');
-
-            // URUTKAN SECARA MANUAL (FIFO): Berdasarkan waktu dibuat (paling lama ke paling baru)
-            pendingOrders.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-
-            const list = document.getElementById('barista-list');
-            
-            if(pendingOrders.length === 0) {
-                list.innerHTML = `
-                    <div class="col-12 text-center py-5">
-                        <i class="bi bi-emoji-smile text-muted" style="font-size: 3rem;"></i>
-                        <h4 class="text-muted mt-3">Belum ada pesanan masuk.</h4>
-                    </div>`;
-                return;
-            }
-
-            list.innerHTML = pendingOrders.map((order, index) => `
-                <div class="col-md-4">
-                    <div class="card order-card h-100 ${index === 0 ? 'priority' : ''}">
-                        <div class="badge-urutan">Antrean #${index + 1}</div>
-                        <div class="card-body text-center pt-4">
-                            <div class="queue-number">${order.queue_number}</div>
-                            <div class="small text-muted mb-3"><i class="bi bi-clock me-1"></i> Masuk: ${new Date(order.created_at).toLocaleTimeString('id-ID')}</div>
-                            
-                            <div class="item-list mb-4">
-                                <ul class="list-unstyled mb-0">
-                                    ${order.order_items.map(it => `
-                                        <li class="d-flex justify-content-between mb-2">
-                                            <span><strong>${it.quantity}x</strong> ${it.products.name}</span>
-                                        </li>
-                                    `).join('')}
-                                </ul>
-                            </div>
-
-                            <button class="btn btn-finish w-100 shadow" onclick="completeAndCall(${order.id}, '${order.queue_number}')">
-                                <i class="bi bi-check-lg me-2"></i>Selesai & Panggil
-                            </button>
+    const apiBaseUrl = "https://sakurasao-coffebreakapi.hf.space";
+    async function loadPending() {
+        const res = await fetch(`${apiBaseUrl}/admin/transactions`);
+        const data = await res.json();
+        const list = document.getElementById('barista-list');
+        const pending = data.filter(o => o.status === 'Pending').sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+        if(pending.length === 0) { list.innerHTML = '<div class="text-center py-5 text-muted"><h5>Belum ada pesanan masuk.</h5></div>'; return; }
+        list.innerHTML = pending.map((order, index) => `
+            <div class="col-md-4">
+                <div class="card card-barista h-100">
+                    <div class="card-body text-center">
+                        <small class="text-muted">Antrean #${index+1}</small>
+                        <div class="queue-num">${order.queue_number}</div>
+                        <div class="text-start p-3 bg-light rounded mb-3">
+                            ${order.order_items.map(it => `<div><b>${it.quantity}x</b> ${it.products.name}</div>`).join('')}
                         </div>
+                        <button class="btn btn-ready w-100" onclick="done(${order.id}, '${order.queue_number}')">Selesai & Panggil</button>
                     </div>
                 </div>
-            `).join('');
-
-            document.getElementById('last-sync').innerText = 'Terakhir sinkron: ' + new Date().toLocaleTimeString('id-ID');
-        } catch (err) {
-            document.getElementById('status-badge').className = 'badge bg-danger';
-            document.getElementById('status-badge').innerText = 'Koneksi Error';
-        }
+            </div>`).join('');
     }
-
-    async function completeAndCall(orderId, queueNum) {
-        if(!confirm(`Konfirmasi pesanan ${queueNum} sudah selesai disiapkan?`)) return;
-
-        try {
-            const res = await fetch(`${apiBaseUrl}/admin/order-complete/${orderId}`, { method: 'PATCH' });
-            if(res.ok) {
-                // Suara Panggilan Otomatis agar customer dengar
-                const voice = new SpeechSynthesisUtterance(`Panggilan untuk nomor antrean ${queueNum}. Pesanan Anda sudah siap.`);
-                voice.lang = 'id-ID';
-                window.speechSynthesis.speak(voice);
-
-                loadBaristaOrders(); // Refresh list agar kartu yang selesai hilang
-            }
-        } catch (err) { alert("Gagal memproses pesanan."); }
+    async function done(id, q) {
+        await fetch(`${apiBaseUrl}/admin/order-complete/${id}`, {method:'PATCH'});
+        const v = new SpeechSynthesisUtterance(`Antrean nomor ${q}, pesanan sudah siap.`);
+        v.lang = 'id-ID'; window.speechSynthesis.speak(v);
+        loadPending();
     }
-
-    // Auto-refresh setiap 10 detik agar barista selalu dapat update terbaru
-    setInterval(loadBaristaOrders, 10000);
-    loadBaristaOrders();
+    setInterval(loadPending, 8000); loadPending();
 </script>
 </body>
 </html>
