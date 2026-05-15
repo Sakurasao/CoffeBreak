@@ -86,12 +86,12 @@
 <nav class="navbar navbar-dark shadow-sm">
     <div class="container-fluid px-4 d-flex justify-content-between align-items-center">
         <a class="navbar-brand d-flex align-items-center" href="#">
-            <img src="../Asset/logo.jpeg" alt="Logo" width="45" height="45" class="me-3" style="border-radius: 50%; border: 2px solid rgba(255,255,255,0.8);">
+            <img src="../Asset/logo.jpeg" alt="" width="45" height="45" class="me-3" style="border-radius: 50%; border: 2px solid rgba(255,255,255,0.8);">
             SABAR COFFEE <small class="fw-light ms-2 text-white-50">| Management Dashboard</small>
         </a>
         <div class="text-white text-end">
             <div class="fw-bold fs-5" id="clock">00:00:00</div>
-            <div class="small text-white-50">Admin Online</div>
+            <div class="small text-white-50">Admin Online <span id="sync-indicator" class="text-success ms-1">●</span></div>
         </div>
     </div>
 </nav>
@@ -99,7 +99,7 @@
 <div class="admin-wrapper">
     <div class="sidebar">
         <div class="sidebar-brand">
-            <img src="../Asset/logo.jpeg" alt="Logo" width="70" height="70" class="mb-3 shadow" style="border-radius: 50%; border: 3px solid #fff;">
+            <img src="../Asset/logo.jpeg" alt="" width="70" height="70" class="mb-3 shadow" style="border-radius: 50%; border: 3px solid #fff;">
             <h6 class="m-0 fw-bold">ADMIN PANEL</h6>
         </div>
         <div class="nav flex-column nav-pills mt-4">
@@ -120,7 +120,7 @@
             <div class="tab-pane fade show active" id="content-transactions">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h3 class="fw-bold m-0 text-dark">Riwayat Transaksi</h3>
-                    <button class="btn btn-brand btn-sm px-4" onclick="loadTransactions()">
+                    <button class="btn btn-brand btn-sm px-4" onclick="forceRefresh()">
                         <i class="bi bi-arrow-clockwise me-1"></i> Refresh
                     </button>
                 </div>
@@ -154,13 +154,27 @@
 <script>
     const apiBaseUrl = "https://sakurasao-coffebreakapi.hf.space";
     let myChart = null;
+    let lastTxData = "";
+    let lastStockData = "";
+    let lastReportData = "";
 
     setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID'); }, 1000);
+
+    function forceRefresh() {
+        lastTxData = "";
+        lastStockData = "";
+        lastReportData = "";
+        syncData();
+    }
 
     async function loadTransactions() {
         try {
             const res = await fetch(`${apiBaseUrl}/admin/transactions`);
             const data = await res.json();
+            const dataStr = JSON.stringify(data);
+            if(dataStr === lastTxData) return;
+            lastTxData = dataStr;
+
             const container = document.getElementById("transaction-groups");
             const groups = {};
             data.forEach(order => {
@@ -221,28 +235,34 @@
                     </div>
                 </div>`;
             }).join('');
-        } catch(e) { console.error(e); }
+        } catch(e) {}
     }
 
     async function loadStock() {
-        const res = await fetch(`${apiBaseUrl}/menu`);
-        const data = await res.json();
-        const list = document.getElementById("stock-list");
-        list.innerHTML = data.map(p => `
-            <div class="col-md-4">
-                <div class="card-stock p-4 h-100">
-                    <h6 class="fw-bold mb-1">${p.name}</h6>
-                    <p class="text-muted small mb-3">${p.category}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="badge ${p.stock > 0 ? 'bg-success' : 'bg-danger'} rounded-pill">Stok: ${p.stock}</span>
-                        <div class="input-group input-group-sm w-50">
-                            <input type="number" class="form-control" id="add-${p.id}" placeholder="+/-">
-                            <button class="btn btn-brand text-white" onclick="updateStock(${p.id})">OK</button>
+        try {
+            const res = await fetch(`${apiBaseUrl}/menu`);
+            const data = await res.json();
+            const dataStr = JSON.stringify(data);
+            if(dataStr === lastStockData) return;
+            lastStockData = dataStr;
+
+            const list = document.getElementById("stock-list");
+            list.innerHTML = data.map(p => `
+                <div class="col-md-4">
+                    <div class="card-stock p-4 h-100">
+                        <h6 class="fw-bold mb-1">${p.name}</h6>
+                        <p class="text-muted small mb-3">${p.category}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge ${p.stock > 0 ? 'bg-success' : 'bg-danger'} rounded-pill">Stok: ${p.stock}</span>
+                            <div class="input-group input-group-sm w-50">
+                                <input type="number" class="form-control" id="add-${p.id}" placeholder="+/-">
+                                <button class="btn btn-brand text-white" onclick="updateStock(${p.id})">OK</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            `).join('');
+        } catch(e) {}
     }
 
     async function updateStock(id) {
@@ -253,35 +273,56 @@
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({stock: parseInt(val)})
         });
+        lastStockData = "";
         loadStock();
     }
 
     async function loadSalesReport() {
-        const res = await fetch(`${apiBaseUrl}/admin/sales-report`);
-        const result = await res.json();
-        document.getElementById("stat-total-revenue").innerText = `Rp ${result.total_period.toLocaleString()}`;
-        const ctx = document.getElementById("salesChart").getContext("2d");
-        if (myChart) myChart.destroy();
-        myChart = new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: result.labels,
-                datasets: [{
-                    label: "Revenue",
-                    data: result.data,
-                    borderColor: "#c85a2e",
-                    backgroundColor: "rgba(200, 90, 46, 0.1)",
-                    fill: true, tension: 0.4, borderWidth: 3
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
+        try {
+            const res = await fetch(`${apiBaseUrl}/admin/sales-report`);
+            const result = await res.json();
+            const dataStr = JSON.stringify(result);
+            if(dataStr === lastReportData) return;
+            lastReportData = dataStr;
+
+            document.getElementById("stat-total-revenue").innerText = `Rp ${result.total_period.toLocaleString()}`;
+            const ctx = document.getElementById("salesChart").getContext("2d");
+            if (myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: result.labels,
+                    datasets: [{
+                        label: "Revenue",
+                        data: result.data,
+                        borderColor: "#c85a2e",
+                        backgroundColor: "rgba(200, 90, 46, 0.1)",
+                        fill: true, tension: 0.4, borderWidth: 3
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        } catch(e) {}
     }
 
-    document.getElementById("tab-transactions").addEventListener("click", loadTransactions);
-    document.getElementById("tab-stock").addEventListener("click", loadStock);
-    document.getElementById("tab-report").addEventListener("click", () => setTimeout(loadSalesReport, 200));
-    loadTransactions();
+    function syncData() {
+        const activeTab = document.querySelector('.nav-link.active').id;
+        const ind = document.getElementById('sync-indicator');
+        ind.style.opacity = '1';
+        
+        if (activeTab === 'tab-transactions') loadTransactions();
+        else if (activeTab === 'tab-stock') loadStock();
+        else if (activeTab === 'tab-report') loadSalesReport();
+        
+        setTimeout(() => { ind.style.opacity = '0.3'; }, 500);
+    }
+
+    document.getElementById("tab-transactions").addEventListener("click", () => { setTimeout(syncData, 100); });
+    document.getElementById("tab-stock").addEventListener("click", () => { setTimeout(syncData, 100); });
+    document.getElementById("tab-report").addEventListener("click", () => { setTimeout(syncData, 100); });
+    
+    syncData();
+    setInterval(syncData, 2000);
 </script>
 </body>
 </html>

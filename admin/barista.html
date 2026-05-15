@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Barista Station - Sabar Coffee</title>
-    
     <link rel="icon" type="image/x-icon" href="../Asset/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
@@ -16,74 +15,31 @@
             --brand-bg: #fbf6eb;
             --brand-muted: #eadfcf;
         }
-
         body { 
-            background-color: var(--brand-bg); 
-            font-family: "Segoe UI", Roboto, sans-serif; 
-            color: #333;
-            min-height: 100vh;
-            padding-top: 100px;
+            background-color: var(--brand-bg); font-family: "Segoe UI", Roboto, sans-serif; color: #333;
+            min-height: 100vh; padding-top: 100px;
         }
-        
         .bg-brand { background-color: var(--brand-primary) !important; }
         .text-brand { color: var(--brand-primary) !important; }
-        
         .btn-brand { background-color: var(--brand-primary); color: #fff; border: none; transition: 0.3s; }
         .btn-brand:hover { background-color: var(--brand-dark); color: #fff; }
-
         .navbar { border-bottom: 3px solid rgba(0,0,0,0.1); padding: 12px 0; }
         .navbar-brand { font-weight: 800; letter-spacing: 1px; color: #fff !important; }
-
         .barista-card { 
-            border: none; 
-            border-radius: 20px; 
-            background: #fff;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-            position: relative; 
-            overflow: hidden; 
-            transition: 0.3s; 
+            border: none; border-radius: 20px; background: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; overflow: hidden; transition: 0.3s; 
         }
-        
         .barista-card.priority-one { 
-            border: 3px solid var(--brand-primary); 
-            transform: scale(1.02); 
+            border: 3px solid var(--brand-primary); transform: scale(1.02); 
             box-shadow: 0 10px 25px rgba(200, 90, 46, 0.15);
         }
-        
         .badge-urutan { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            background: var(--brand-primary); 
-            color: white; 
-            padding: 8px 20px; 
-            border-bottom-right-radius: 20px; 
-            font-weight: bold; 
-            font-size: 0.9rem;
-            z-index: 10; 
+            position: absolute; top: 0; left: 0; background: var(--brand-primary); color: white; 
+            padding: 8px 20px; border-bottom-right-radius: 20px; font-weight: bold; font-size: 0.9rem; z-index: 10; 
         }
-        
-        .queue-number { 
-            font-size: 2.5rem; 
-            font-weight: 900; 
-            color: #333; 
-            margin-top: 15px; 
-        }
-        
-        .item-list { 
-            background: #fafafa; 
-            border: 1px solid #eee;
-            border-radius: 15px;
-            padding: 15px; 
-            text-align: left; 
-        }
-
-        .btn-finish {
-            border-radius: 15px;
-            padding: 15px;
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
+        .queue-number { font-size: 2.5rem; font-weight: 900; color: #333; margin-top: 15px; }
+        .item-list { background: #fafafa; border: 1px solid #eee; border-radius: 15px; padding: 15px; text-align: left; }
+        .btn-finish { border-radius: 15px; padding: 15px; font-weight: bold; font-size: 1.1rem; }
     </style>
 </head>
 <body>
@@ -96,7 +52,7 @@
         </a>
         <div class="text-white text-end d-flex align-items-center">
             <div id="status-badge" class="badge bg-white text-brand px-3 py-2 rounded-pill shadow-sm me-3">Sistem Aktif</div>
-            <div class="small text-white-50 fw-medium" id="last-sync">Sync: -</div>
+            <div class="small text-white-50 fw-medium">Sync <span id="sync-indicator" class="text-success ms-1">●</span></div>
         </div>
     </div>
 </nav>
@@ -106,30 +62,31 @@
         <h3 class="fw-bold text-dark mb-1"><i class="bi bi-cup-hot-fill me-2 text-brand"></i>Antrean Dapur</h3>
         <p class="text-muted small">Pesanan yang sudah dilunaskan di kasir otomatis muncul di sini. (Urutan #1 prioritas)</p>
     </div>
-
-    <div id="barista-list" class="row g-4">
-        <div class="col-12 text-center py-5">
-            <div class="spinner-border text-brand" role="status"></div>
-            <p class="mt-2 text-muted fw-medium">Menyinkronkan data dapur...</p>
-        </div>
-    </div>
+    <div id="barista-list" class="row g-4"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
     const apiBaseUrl = "https://sakurasao-coffebreakapi.hf.space";
+    let lastPendingData = "";
 
     async function loadBaristaOrders() {
         try {
+            const ind = document.getElementById('sync-indicator');
+            if(ind) ind.style.opacity = '1';
+
             const res = await fetch(`${apiBaseUrl}/admin/transactions`);
             const data = await res.json();
+            let pendingOrders = data.filter(o => o.status === 'Pending').sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+            const dataStr = JSON.stringify(pendingOrders);
+            if(dataStr === lastPendingData) {
+                if(ind) setTimeout(() => { ind.style.opacity = '0.3'; }, 500);
+                return;
+            }
+            lastPendingData = dataStr;
+
             const list = document.getElementById('barista-list');
-            
-            let pendingOrders = data.filter(o => o.status === 'Pending');
-
-            pendingOrders.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-
             if(pendingOrders.length === 0) {
                 list.innerHTML = `
                     <div class="col-12 text-center py-5 mt-5">
@@ -137,6 +94,7 @@
                         <h4 class="text-muted mt-3 fw-bold">Dapur Kosong</h4>
                         <p class="text-muted">Belum ada pesanan masuk yang perlu diracik.</p>
                     </div>`;
+                if(ind) setTimeout(() => { ind.style.opacity = '0.3'; }, 500);
                 return;
             }
 
@@ -144,14 +102,12 @@
                 <div class="col-md-6 col-lg-4">
                     <div class="card barista-card h-100 ${index === 0 ? 'priority-one' : ''}">
                         <div class="badge-urutan">Urutan #${index + 1}</div>
-                        
                         <div class="card-body text-center pt-5">
                             <div class="small text-muted text-uppercase fw-bold" style="letter-spacing: 1px;">Antrean</div>
                             <div class="queue-number mb-2">${order.queue_number}</div>
                             <div class="small text-muted mb-4">
                                 <i class="bi bi-clock me-1"></i> Masuk: ${new Date(order.created_at).toLocaleTimeString('id-ID')}
                             </div>
-                            
                             <div class="item-list mb-4">
                                 <ul class="list-unstyled mb-0">
                                     ${order.order_items.map(it => `
@@ -162,7 +118,6 @@
                                     `).join('')}
                                 </ul>
                             </div>
-
                             <button class="btn btn-brand btn-finish w-100 shadow-sm" onclick="completeAndCall(${order.id}, '${order.queue_number}')">
                                 <i class="bi bi-check2-circle me-2"></i>Selesai & Panggil
                             </button>
@@ -171,34 +126,31 @@
                 </div>
             `).join('');
 
-            document.getElementById('last-sync').innerText = 'Sync: ' + new Date().toLocaleTimeString('id-ID');
             document.getElementById('status-badge').className = 'badge bg-white text-brand px-3 py-2 rounded-pill shadow-sm me-3';
             document.getElementById('status-badge').innerText = 'Sistem Aktif';
+            if(ind) setTimeout(() => { ind.style.opacity = '0.3'; }, 500);
         } catch (err) {
             document.getElementById('status-badge').className = 'badge bg-danger text-white px-3 py-2 rounded-pill shadow-sm me-3';
             document.getElementById('status-badge').innerText = 'Koneksi Error';
-            console.error("Gagal sinkronisasi dapur:", err);
         }
     }
 
     async function completeAndCall(orderId, queueNum) {
-        if(!confirm(`Konfirmasi pesanan ${queueNum} sudah selesai diracik?`)) return;
-
+        if(!confirm(`Konfirmasi pesanan ${queueNum} sudah selesai disiapkan?`)) return;
         try {
             const res = await fetch(`${apiBaseUrl}/admin/order-complete/${orderId}`, { method: 'PATCH' });
             if(res.ok) {
                 const voice = new SpeechSynthesisUtterance(`Panggilan untuk antrean nomor ${queueNum}. Pesanan Anda sudah siap diambil.`);
                 voice.lang = 'id-ID';
                 window.speechSynthesis.speak(voice);
-
-                loadBaristaOrders();
+                lastPendingData = "";
+                loadBaristaOrders(); 
             } else { alert("Gagal memperbarui status pesanan."); }
         } catch (err) { alert("Gagal memproses pesanan."); }
     }
 
-    setInterval(loadBaristaOrders, 10000);
-    
     loadBaristaOrders();
+    setInterval(loadBaristaOrders, 2000);
 </script>
 </body>
 </html>
