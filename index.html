@@ -25,7 +25,6 @@
             scroll-behavior: smooth;
         }
 
-        /* --- NAVBAR (KONSISTEN DENGAN ADMIN/KASIR) --- */
         .navbar { 
             background-color: var(--brand-primary) !important; 
             padding: 12px 0; 
@@ -35,7 +34,6 @@
         .nav-link { color: rgba(255,255,255,0.8) !important; font-weight: 500; }
         .nav-link.active { color: #fff !important; font-weight: 700; }
 
-        /* --- CATEGORY BUTTONS (CAPSULE) --- */
         .btn-category {
             background-color: #fff;
             color: #666;
@@ -53,7 +51,6 @@
             box-shadow: 0 4px 12px rgba(200, 90, 46, 0.2);
         }
 
-        /* --- CARD MENU (CLEAN & ROUNDED 20px) --- */
         .card-menu {
             border: none;
             border-radius: 20px;
@@ -97,7 +94,6 @@
         }
         .btn-add-menu:hover { background-color: var(--brand-dark); transform: rotate(90deg); }
 
-        /* --- STICKY CART SIDEBAR --- */
         .sticky-cart {
             position: sticky;
             top: 100px;
@@ -129,10 +125,8 @@
             background: #fff;
         }
 
-        /* --- FOOTER --- */
         footer { background-color: var(--brand-dark); color: #fff; padding: 30px 0; }
 
-        /* --- SCROLLBAR --- */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--brand-bg); }
         ::-webkit-scrollbar-thumb { background: var(--brand-muted); border-radius: 10px; }
@@ -272,7 +266,6 @@
 
         async function initDashboard() {
             try {
-                // 1. Load Info (data.json)
                 const resInfo = await fetch(`${apiBaseUrl}/info`);
                 const dataInfo = await resInfo.json();
                 if (dataInfo.pengumuman) {
@@ -281,7 +274,6 @@
                     document.getElementById("text-jadwal").innerText = `Jam Operasional: ${dataInfo.jadwal_buka}`;
                 }
 
-                // 2. Load Menu
                 const resMenu = await fetch(`${apiBaseUrl}/menu`);
                 menuData = await resMenu.json();
                 
@@ -331,7 +323,6 @@
             `).join("");
         }
 
-        // --- Logic Keranjang Belanja ---
         function addToCart(id) {
             const item = menuData.find(m => m.id === id);
             if (!cart[id]) cart[id] = { ...item, qty: 1 };
@@ -379,7 +370,6 @@
             }
         }
 
-        // --- Proses Kirim Order ---
         document.getElementById("btn-order").addEventListener("click", async () => {
             const items = Object.values(cart);
             if (items.length === 0) return alert("Keranjang belanja kosong!");

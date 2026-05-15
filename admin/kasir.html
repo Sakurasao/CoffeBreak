@@ -1,177 +1,252 @@
 <!doctype html>
 <html lang="id">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Kasir Station - Sabar Coffee</title>
-    <link rel="icon" type="image/x-icon" href="../Asset/favicon.ico">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
-    
+    <link rel="icon" type="image/x-icon" href="../Asset/favicon.ico" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css"
+    />
+
     <style>
-        :root {
-            --brand-primary: #c85a2e;
-            --brand-dark: #8e3f1a;
-            --brand-bg: #fbf6eb;
-            --brand-muted: #eadfcf;
-        }
+      :root {
+        --brand-primary: #c85a2e;
+        --brand-dark: #8e3f1a;
+        --brand-bg: #fbf6eb;
+        --brand-muted: #eadfcf;
+      }
 
-        body { 
-            background-color: var(--brand-bg); 
-            font-family: "Segoe UI", Roboto, sans-serif; 
-            color: #333;
-            min-height: 100vh; 
-            padding-top: 100px; /* Jarak untuk navbar fixed */
-        }
-        
-        /* --- UI Elements Konsisten Index --- */
-        .bg-brand { background-color: var(--brand-primary) !important; }
-        .text-brand { color: var(--brand-primary) !important; }
-        
-        .btn-brand { background-color: var(--brand-primary); color: #fff; border: none; transition: 0.3s; }
-        .btn-brand:hover { background-color: var(--brand-dark); color: #fff; }
+      body {
+        background-color: var(--brand-bg);
+        font-family: "Segoe UI", Roboto, sans-serif;
+        color: #333;
+        min-height: 100vh;
+        padding-top: 100px;
+      }
+      .bg-brand {
+        background-color: var(--brand-primary) !important;
+      }
+      .text-brand {
+        color: var(--brand-primary) !important;
+      }
 
-        /* --- NAVBAR --- */
-        .navbar { border-bottom: 3px solid rgba(0,0,0,0.1); padding: 12px 0; }
-        .navbar-brand { font-weight: 800; letter-spacing: 1px; color: #fff !important; }
+      .btn-brand {
+        background-color: var(--brand-primary);
+        color: #fff;
+        border: none;
+        transition: 0.3s;
+      }
+      .btn-brand:hover {
+        background-color: var(--brand-dark);
+        color: #fff;
+      }
+      .navbar {
+        border-bottom: 3px solid rgba(0, 0, 0, 0.1);
+        padding: 12px 0;
+      }
+      .navbar-brand {
+        font-weight: 800;
+        letter-spacing: 1px;
+        color: #fff !important;
+      }
 
-        /* --- KARTU KASIR ROUNDED 20px --- */
-        .container { max-width: 1000px; }
-        .card-kasir { 
-            border: none; 
-            border-radius: 20px; 
-            border-top: 8px solid var(--brand-primary); 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            background: #fff;
-            margin-bottom: 30px;
-        }
-        
-        .kasir-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #f1f1f1;
-            padding-bottom: 20px;
-            margin-bottom: 25px;
-        }
+      .container {
+        max-width: 1000px;
+      }
+      .card-kasir {
+        border: none;
+        border-radius: 20px;
+        border-top: 8px solid var(--brand-primary);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        background: #fff;
+        margin-bottom: 30px;
+      }
 
-        .price-total { color: var(--brand-primary); font-weight: 900; font-size: 2.2rem; margin: 0; }
-        
-        .queue-badge { 
-            font-size: 1.2rem; 
-            background: #333;
-            color: #fff;
-            padding: 8px 20px;
-            border-radius: 50px; /* Capsule style seperti tombol kategori di index */
-        }
-        
-        .item-box { 
-            background: #fafafa; 
-            border: 1px solid #eee; 
-            border-radius: 20px; /* Sesuai index */
-            padding: 20px; 
-        }
+      .kasir-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #f1f1f1;
+        padding-bottom: 20px;
+        margin-bottom: 25px;
+      }
 
-        .input-bayar {
-            font-size: 2.2rem !important;
-            height: 85px;
-            text-align: center;
-            border: 2px solid #e0e0e0 !important;
-            border-radius: 15px !important;
-            font-weight: bold;
-            background-color: #fafafa;
-        }
-        .input-bayar:focus { 
-            border-color: var(--brand-primary) !important; 
-            background-color: #fff;
-            box-shadow: 0 0 0 0.25rem rgba(200, 90, 46, 0.25); 
-        }
+      .price-total {
+        color: var(--brand-primary);
+        font-weight: 900;
+        font-size: 2.2rem;
+        margin: 0;
+      }
 
-        .btn-lg-custom { border-radius: 15px; padding: 15px; font-weight: bold; }
+      .queue-badge {
+        font-size: 1.2rem;
+        background: #333;
+        color: #fff;
+        padding: 8px 20px;
+        border-radius: 50px;
+      }
 
-        /* --- STYLE PRINT THERMAL 58MM --- */
-        #print-area { display: none; }
-        @media print {
-            @page { size: auto; margin: 0mm; }
-            body { display: block; background: #fff; padding-top: 0; }
-            .main-kasir-view, .navbar { display: none !important; }
-            #print-area { display: block !important; width: 100%; padding: 10px; font-family: 'Courier New', Courier, monospace; }
-            .r-divider { border-top: 1px dashed #000; margin: 5px 0; }
-            .d-print-flex { display: flex !important; justify-content: space-between !important; }
+      .item-box {
+        background: #fafafa;
+        border: 1px solid #eee;
+        border-radius: 20px;
+        padding: 20px;
+      }
+
+      .input-bayar {
+        font-size: 2.2rem !important;
+        height: 85px;
+        text-align: center;
+        border: 2px solid #e0e0e0 !important;
+        border-radius: 15px !important;
+        font-weight: bold;
+        background-color: #fafafa;
+      }
+      .input-bayar:focus {
+        border-color: var(--brand-primary) !important;
+        background-color: #fff;
+        box-shadow: 0 0 0 0.25rem rgba(200, 90, 46, 0.25);
+      }
+
+      .btn-lg-custom {
+        border-radius: 15px;
+        padding: 15px;
+        font-weight: bold;
+      }
+
+      #print-area {
+        display: none;
+      }
+      @media print {
+        @page {
+          size: auto;
+          margin: 0mm;
         }
+        body {
+          display: block;
+          background: #fff;
+          padding-top: 0;
+        }
+        .main-kasir-view,
+        .navbar {
+          display: none !important;
+        }
+        #print-area {
+          display: block !important;
+          width: 100%;
+          padding: 10px;
+          font-family: "Courier New", Courier, monospace;
+        }
+        .r-divider {
+          border-top: 1px dashed #000;
+          margin: 5px 0;
+        }
+        .d-print-flex {
+          display: flex !important;
+          justify-content: space-between !important;
+        }
+      }
     </style>
-</head>
-<body>
-
-<nav class="navbar navbar-dark bg-brand fixed-top shadow-sm no-print">
-    <div class="container d-flex justify-content-between align-items-center">
+  </head>
+  <body>
+    <nav class="navbar navbar-dark bg-brand fixed-top shadow-sm no-print">
+      <div class="container d-flex justify-content-between align-items-center">
         <a class="navbar-brand d-flex align-items-center" href="#">
-            <img src="../Asset/logo.jpeg" alt="Logo" width="40" height="40" class="me-2" style="border-radius: 50%; border: 2px solid rgba(255,255,255,0.8);">
-            SABAR COFFEE <small class="fw-light ms-2 text-white-50 d-none d-sm-inline">| Cashier Station</small>
+          <img
+            src="../Asset/logo.jpeg"
+            alt="Logo"
+            width="40"
+            height="40"
+            class="me-2"
+            style="
+              border-radius: 50%;
+              border: 2px solid rgba(255, 255, 255, 0.8);
+            "
+          />
+          SABAR COFFEE
+          <small class="fw-light ms-2 text-white-50 d-none d-sm-inline"
+            >| Cashier Station</small
+          >
         </a>
         <div class="text-white text-end d-flex align-items-center">
-            <div class="fw-bold fs-5 me-3" id="real-time-clock">00:00:00</div>
-            <div class="small text-white-50"><i class="bi bi-circle-fill text-success me-1"></i> Live</div>
+          <div class="fw-bold fs-5 me-3" id="real-time-clock">00:00:00</div>
+          <div class="small text-white-50">
+            <i class="bi bi-circle-fill text-success me-1"></i> Live
+          </div>
         </div>
+      </div>
+    </nav>
+
+    <div class="container main-kasir-view pb-5">
+      <div id="kasir-list" class="row justify-content-center"></div>
     </div>
-</nav>
 
-<div class="container main-kasir-view pb-5">
-    <div id="kasir-list" class="row justify-content-center">
-        </div>
-</div>
-
-<div id="print-area">
-    <div class="text-center">
+    <div id="print-area">
+      <div class="text-center">
         <h5 class="fw-bold m-0">SABAR COFFEE</h5>
-        <p style="font-size: 12px;">Sidoarjo, Jawa Timur</p>
-        <p style="font-size: 11px;" id="r-date-time"></p>
-    </div>
-    <div class="d-print-flex" style="font-size: 12px;">
+        <p style="font-size: 12px">Sidoarjo, Jawa Timur</p>
+        <p style="font-size: 11px" id="r-date-time"></p>
+      </div>
+      <div class="d-print-flex" style="font-size: 12px">
         <span>No: <strong id="r-queue"></strong></span>
         <span>Kasir: Sabar</span>
-    </div>
-    <div class="r-divider"></div>
-    <table style="width: 100%; font-size: 12px;">
+      </div>
+      <div class="r-divider"></div>
+      <table style="width: 100%; font-size: 12px">
         <tbody id="r-items"></tbody>
-    </table>
-    <div class="r-divider"></div>
-    <div class="d-print-flex"><span>TOTAL</span><span id="r-total"></span></div>
-    <div class="d-print-flex"><span>TUNAI</span><span id="r-cash"></span></div>
-    <div class="d-print-flex" style="font-weight: bold;"><span>KEMBALI</span><span id="r-change"></span></div>
-    <div class="r-divider"></div>
-    <div class="text-center mt-3" style="font-size: 10px;">
-        <p>"Sabar itu Kopi, Nikmat itu Pasti"<br>Terima Kasih!</p>
+      </table>
+      <div class="r-divider"></div>
+      <div class="d-print-flex">
+        <span>TOTAL</span><span id="r-total"></span>
+      </div>
+      <div class="d-print-flex">
+        <span>TUNAI</span><span id="r-cash"></span>
+      </div>
+      <div class="d-print-flex" style="font-weight: bold">
+        <span>KEMBALI</span><span id="r-change"></span>
+      </div>
+      <div class="r-divider"></div>
+      <div class="text-center mt-3" style="font-size: 10px">
+        <p>"Sabar itu Kopi, Nikmat itu Pasti"<br />Terima Kasih!</p>
+      </div>
     </div>
-</div>
 
-<script>
-    const apiBaseUrl = "https://sakurasao-coffebreakapi.hf.space";
-    let tempCashInputs = {}; 
+    <script>
+      const apiBaseUrl = "https://sakurasao-coffebreakapi.hf.space";
+      let tempCashInputs = {};
 
-    // Update Jam Real-Time
-    setInterval(() => {
-        document.getElementById('real-time-clock').innerText = new Date().toLocaleTimeString('id-ID');
-    }, 1000);
+      setInterval(() => {
+        document.getElementById("real-time-clock").innerText =
+          new Date().toLocaleTimeString("id-ID");
+      }, 1000);
 
-    // Load Data Kasir
-    async function loadUnpaid() {
+      async function loadUnpaid() {
         try {
-            const res = await fetch(`${apiBaseUrl}/admin/transactions`);
-            const data = await res.json();
-            const list = document.getElementById('kasir-list');
-            
-            const unpaid = data.filter(o => o.status === 'Unpaid').sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
-            const focusedOrders = unpaid.slice(0, 2);
+          const res = await fetch(`${apiBaseUrl}/admin/transactions`);
+          const data = await res.json();
+          const list = document.getElementById("kasir-list");
 
-            if(focusedOrders.length === 0) { 
-                list.innerHTML = '<div class="text-center py-5"><h3 class="text-muted">☕ Belum ada antrean pelanggan...</h3></div>'; 
-                return; 
-            }
+          const unpaid = data
+            .filter((o) => o.status === "Unpaid")
+            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+          const focusedOrders = unpaid.slice(0, 2);
 
-            list.innerHTML = focusedOrders.map(order => {
-                const savedValue = tempCashInputs[order.id] || "";
-                return `
+          if (focusedOrders.length === 0) {
+            list.innerHTML =
+              '<div class="text-center py-5"><h3 class="text-muted">☕ Belum ada antrean pelanggan...</h3></div>';
+            return;
+          }
+
+          list.innerHTML = focusedOrders
+            .map((order) => {
+              const savedValue = tempCashInputs[order.id] || "";
+              return `
                 <div class="col-12">
                     <div class="card card-kasir p-4">
                         <div class="kasir-header">
@@ -184,12 +259,16 @@
                                 <div class="item-box">
                                     <h6 class="fw-bold mb-3 border-bottom pb-2 text-uppercase text-muted" style="letter-spacing: 1px; font-size: 0.8rem;">Item Pesanan:</h6>
                                     <ul class="list-unstyled mb-0">
-                                        ${order.order_items.map(it => `
+                                        ${order.order_items
+                                          .map(
+                                            (it) => `
                                             <li class="d-flex justify-content-between mb-2">
                                                 <span class="fw-medium">${it.quantity}x ${it.products.name}</span>
                                                 <span class="text-muted">Rp ${(it.quantity * it.price_at_purchase).toLocaleString()}</span>
                                             </li>
-                                        `).join('')}
+                                        `,
+                                          )
+                                          .join("")}
                                     </ul>
                                 </div>
                                 <button class="btn btn-link text-danger text-decoration-none p-0 mt-3 small" onclick="cancel(${order.id})">
@@ -216,7 +295,7 @@
                                         </button>
                                     </div>
                                     <div class="col-3">
-                                        <button class="btn btn-dark btn-lg-custom w-100 shadow-sm" onclick="printReceipt(${JSON.stringify(order).replace(/"/g, '&quot;')})">
+                                        <button class="btn btn-dark btn-lg-custom w-100 shadow-sm" onclick="printReceipt(${JSON.stringify(order).replace(/"/g, "&quot;")})">
                                             <i class="bi bi-printer"></i>
                                         </button>
                                     </div>
@@ -225,72 +304,91 @@
                         </div>
                     </div>
                 </div>`;
-            }).join('');
+            })
+            .join("");
 
-            focusedOrders.forEach(o => {
-                if(tempCashInputs[o.id]) calcChange(o.id, o.total_price);
-            });
+          focusedOrders.forEach((o) => {
+            if (tempCashInputs[o.id]) calcChange(o.id, o.total_price);
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      }
 
-        } catch (e) { console.error(e); }
-    }
-
-    function handleInput(id, total) {
+      function handleInput(id, total) {
         const val = document.getElementById(`cash-${id}`).value;
         tempCashInputs[id] = val;
         calcChange(id, total);
-    }
+      }
 
-    function calcChange(id, total) {
+      function calcChange(id, total) {
         const cash = document.getElementById(`cash-${id}`).value || 0;
         const changeEl = document.getElementById(`change-${id}`);
         const change = cash - total;
         if (change < 0) {
-            changeEl.innerText = '- Rp ' + Math.abs(change).toLocaleString();
-            changeEl.className = 'fw-bold text-danger m-0';
+          changeEl.innerText = "- Rp " + Math.abs(change).toLocaleString();
+          changeEl.className = "fw-bold text-danger m-0";
         } else {
-            changeEl.innerText = 'Rp ' + change.toLocaleString();
-            changeEl.className = 'fw-bold text-success m-0';
+          changeEl.innerText = "Rp " + change.toLocaleString();
+          changeEl.className = "fw-bold text-success m-0";
         }
-    }
+      }
 
-    async function pay(id, q) { 
+      async function pay(id, q) {
         const cash = tempCashInputs[id];
-        const totalText = document.getElementById(`cash-${id}`).closest('.card-kasir').querySelector('.price-total').innerText;
-        const total = parseInt(totalText.replace(/\D/g,''));
-        if (!cash || cash < total) { alert("Uang pembayaran kurang atau belum diisi!"); return; }
-        if(confirm(`Selesaikan pembayaran antrean ${q}?`)) { 
-            await fetch(`${apiBaseUrl}/admin/confirm-payment/${id}`, {method:'PATCH'}); 
-            delete tempCashInputs[id];
-            loadUnpaid(); 
-        } 
-    }
+        const totalText = document
+          .getElementById(`cash-${id}`)
+          .closest(".card-kasir")
+          .querySelector(".price-total").innerText;
+        const total = parseInt(totalText.replace(/\D/g, ""));
+        if (!cash || cash < total) {
+          alert("Uang pembayaran kurang atau belum diisi!");
+          return;
+        }
+        if (confirm(`Selesaikan pembayaran antrean ${q}?`)) {
+          await fetch(`${apiBaseUrl}/admin/confirm-payment/${id}`, {
+            method: "PATCH",
+          });
+          delete tempCashInputs[id];
+          loadUnpaid();
+        }
+      }
 
-    async function cancel(id) { 
-        if(confirm("Hapus pesanan ini? Stok akan otomatis kembali.")) { 
-            await fetch(`${apiBaseUrl}/admin/cancel-order/${id}`, {method:'DELETE'}); 
-            delete tempCashInputs[id];
-            loadUnpaid(); 
-        } 
-    }
+      async function cancel(id) {
+        if (confirm("Hapus pesanan ini? Stok akan otomatis kembali.")) {
+          await fetch(`${apiBaseUrl}/admin/cancel-order/${id}`, {
+            method: "DELETE",
+          });
+          delete tempCashInputs[id];
+          loadUnpaid();
+        }
+      }
 
-    function printReceipt(o) {
+      function printReceipt(o) {
         const cash = tempCashInputs[o.id] || 0;
-        document.getElementById('r-date-time').innerText = new Date().toLocaleString('id-ID');
-        document.getElementById('r-queue').innerText = o.queue_number;
-        document.getElementById('r-total').innerText = 'Rp ' + o.total_price.toLocaleString();
-        document.getElementById('r-cash').innerText = 'Rp ' + parseInt(cash).toLocaleString();
-        document.getElementById('r-change').innerText = 'Rp ' + (cash - o.total_price > 0 ? (cash - o.total_price).toLocaleString() : 0);
-        let html = '';
-        o.order_items.forEach(it => {
-            html += `<tr><td colspan="2"><strong>${it.products.name}</strong></td></tr>
-                     <tr><td>${it.quantity} x ${it.price_at_purchase.toLocaleString()}</td><td style="text-align:right">${(it.quantity*it.price_at_purchase).toLocaleString()}</td></tr>`;
+        document.getElementById("r-date-time").innerText =
+          new Date().toLocaleString("id-ID");
+        document.getElementById("r-queue").innerText = o.queue_number;
+        document.getElementById("r-total").innerText =
+          "Rp " + o.total_price.toLocaleString();
+        document.getElementById("r-cash").innerText =
+          "Rp " + parseInt(cash).toLocaleString();
+        document.getElementById("r-change").innerText =
+          "Rp " +
+          (cash - o.total_price > 0
+            ? (cash - o.total_price).toLocaleString()
+            : 0);
+        let html = "";
+        o.order_items.forEach((it) => {
+          html += `<tr><td colspan="2"><strong>${it.products.name}</strong></td></tr>
+                     <tr><td>${it.quantity} x ${it.price_at_purchase.toLocaleString()}</td><td style="text-align:right">${(it.quantity * it.price_at_purchase).toLocaleString()}</td></tr>`;
         });
-        document.getElementById('r-items').innerHTML = html;
+        document.getElementById("r-items").innerHTML = html;
         window.print();
-    }
+      }
 
-    setInterval(loadUnpaid, 5000);
-    loadUnpaid();
-</script>
-</body>
+      setInterval(loadUnpaid, 5000);
+      loadUnpaid();
+    </script>
+  </body>
 </html>

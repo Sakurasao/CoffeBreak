@@ -22,21 +22,18 @@
             font-family: "Segoe UI", Roboto, sans-serif; 
             color: #333;
             min-height: 100vh;
-            padding-top: 100px; /* Jarak untuk navbar fixed */
+            padding-top: 100px;
         }
         
-        /* --- UI Elements Konsisten Index --- */
         .bg-brand { background-color: var(--brand-primary) !important; }
         .text-brand { color: var(--brand-primary) !important; }
         
         .btn-brand { background-color: var(--brand-primary); color: #fff; border: none; transition: 0.3s; }
         .btn-brand:hover { background-color: var(--brand-dark); color: #fff; }
 
-        /* --- NAVBAR --- */
         .navbar { border-bottom: 3px solid rgba(0,0,0,0.1); padding: 12px 0; }
         .navbar-brand { font-weight: 800; letter-spacing: 1px; color: #fff !important; }
 
-        /* --- GAYA KARTU BARISTA ROUNDED 20px --- */
         .barista-card { 
             border: none; 
             border-radius: 20px; 
@@ -47,14 +44,12 @@
             transition: 0.3s; 
         }
         
-        /* Highlight khusus untuk Pesanan Paling Lama (Prioritas #1) */
         .barista-card.priority-one { 
             border: 3px solid var(--brand-primary); 
             transform: scale(1.02); 
             box-shadow: 0 10px 25px rgba(200, 90, 46, 0.15);
         }
         
-        /* Label Urutan Pojok */
         .badge-urutan { 
             position: absolute; 
             top: 0; 
@@ -75,11 +70,10 @@
             margin-top: 15px; 
         }
         
-        /* Kotak Rincian Pesanan */
         .item-list { 
             background: #fafafa; 
             border: 1px solid #eee;
-            border-radius: 15px; /* Rounded konsisten */
+            border-radius: 15px;
             padding: 15px; 
             text-align: left; 
         }
@@ -126,17 +120,14 @@
 <script>
     const apiBaseUrl = "https://sakurasao-coffebreakapi.hf.space";
 
-    // --- LOAD PESANAN PENDING ---
     async function loadBaristaOrders() {
         try {
             const res = await fetch(`${apiBaseUrl}/admin/transactions`);
             const data = await res.json();
             const list = document.getElementById('barista-list');
             
-            // FILTER: Hanya ambil yang statusnya 'Pending' (Sudah Bayar)
             let pendingOrders = data.filter(o => o.status === 'Pending');
 
-            // URUTKAN SECARA MANUAL (FIFO): Dari yang paling lama dibuat
             pendingOrders.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
             if(pendingOrders.length === 0) {
@@ -149,7 +140,6 @@
                 return;
             }
 
-            // Render ke HTML
             list.innerHTML = pendingOrders.map((order, index) => `
                 <div class="col-md-6 col-lg-4">
                     <div class="card barista-card h-100 ${index === 0 ? 'priority-one' : ''}">
@@ -191,28 +181,23 @@
         }
     }
 
-    // --- SELESAIKAN PESANAN ---
     async function completeAndCall(orderId, queueNum) {
         if(!confirm(`Konfirmasi pesanan ${queueNum} sudah selesai diracik?`)) return;
 
         try {
-            // Update status di API jadi 'Completed'
             const res = await fetch(`${apiBaseUrl}/admin/order-complete/${orderId}`, { method: 'PATCH' });
             if(res.ok) {
-                // Fitur Text-to-Speech agar customer dengar panggilannya
                 const voice = new SpeechSynthesisUtterance(`Panggilan untuk antrean nomor ${queueNum}. Pesanan Anda sudah siap diambil.`);
                 voice.lang = 'id-ID';
                 window.speechSynthesis.speak(voice);
 
-                loadBaristaOrders(); // Refresh list agar kartu yang selesai hilang
+                loadBaristaOrders();
             } else { alert("Gagal memperbarui status pesanan."); }
         } catch (err) { alert("Gagal memproses pesanan."); }
     }
 
-    // Auto-refresh setiap 10 detik agar barista dapat update pesanan baru
     setInterval(loadBaristaOrders, 10000);
     
-    // Jalankan pertama kali saat halaman dibuka
     loadBaristaOrders();
 </script>
 </body>
