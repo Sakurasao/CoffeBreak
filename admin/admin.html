@@ -4,96 +4,126 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Dashboard - Sabar Coffee</title>
+    
     <link rel="icon" type="image/x-icon" href="../Asset/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        :root { --brand: #c85a2e; }
-        
-        /* Layout Dasar */
+        :root {
+            --brand-primary: #c85a2e;
+            --brand-dark: #8e3f1a;
+            --brand-bg: #fbf6eb;
+            --brand-muted: #eadfcf;
+        }
+
+        /* --- LAYOUT DASAR ANTI-SCROLL BODY --- */
         body { 
-            background-color: #f8f9fa; 
-            font-family: 'Segoe UI', sans-serif; 
+            background-color: var(--brand-bg); 
+            font-family: "Segoe UI", Roboto, sans-serif; 
+            color: #333;
             overflow: hidden; /* Mencegah body utama di-scroll */
             height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
+        /* --- UI ELEMENTS KONSISTEN INDEX --- */
+        .bg-brand { background-color: var(--brand-primary) !important; }
+        .text-brand { color: var(--brand-primary) !important; }
+        
+        .btn-brand { background-color: var(--brand-primary); color: #fff; border: none; transition: 0.3s; }
+        .btn-brand:hover { background-color: var(--brand-dark); color: #fff; }
+
         /* --- FIXED NAVBAR --- */
         .navbar { 
-            background-color: var(--brand) !important; 
-            height: 70px;
+            background-color: var(--brand-primary) !important; 
+            height: 75px;
             z-index: 1030;
             flex-shrink: 0;
+            border-bottom: 3px solid rgba(0,0,0,0.1);
         }
+        .navbar-brand { font-weight: 800; letter-spacing: 1px; color: #fff !important; }
 
         /* --- WRAPPER UTAMA --- */
         .admin-wrapper {
             display: flex;
             flex: 1;
-            overflow: hidden; /* Penting untuk memisahkan scroll */
+            overflow: hidden; /* Pisahkan scroll kiri dan kanan */
         }
 
         /* --- FIXED SIDEBAR --- */
         .sidebar { 
             width: 260px;
             background: #fff;
-            border-right: 1px solid #dee2e6;
+            border-right: 1px solid #eee;
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.03);
+            z-index: 1020;
         }
         
         .sidebar-brand {
-            background: var(--brand);
-            padding: 20px;
+            background: var(--brand-primary);
+            padding: 25px 20px;
             text-align: center;
             color: #fff;
         }
 
-        .nav-link { 
-            color: #444; 
-            padding: 15px 20px; 
-            border-radius: 0; 
-            transition: 0.2s;
-            border-left: 4px solid transparent;
+        /* Navigasi Kapsul (Pill) di Sidebar */
+        .sidebar .nav-link { 
+            color: #555; 
+            padding: 12px 20px; 
+            border-radius: 50px; /* Sesuai tombol kategori di index */
+            margin: 5px 15px;
+            font-weight: 600;
+            transition: 0.3s;
         }
-        .nav-link:hover { background: #f1f1f1; color: var(--brand); }
-        .nav-link.active { 
-            background: #fff5f2; 
-            color: var(--brand) !important; 
-            font-weight: bold;
-            border-left-color: var(--brand);
+        .sidebar .nav-link:hover { background: var(--brand-bg); color: var(--brand-primary); }
+        .sidebar .nav-link.active { 
+            background: var(--brand-primary) !important; 
+            color: #fff !important; 
+            box-shadow: 0 4px 10px rgba(200, 90, 46, 0.2);
         }
 
-        /* --- SCROLLABLE CONTENT --- */
+        /* --- SCROLLABLE MAIN CONTENT --- */
         .main-content {
             flex: 1;
-            overflow-y: auto; /* Hanya area ini yang bisa di-scroll */
+            overflow-y: auto; /* Hanya bagian ini yang bisa digulir */
             padding: 30px;
-            background: #f8f9fa;
+            background-color: var(--brand-bg);
         }
 
-        /* --- UI CARDS (ROUNDED & CLEAN) --- */
-        .card { 
+        /* --- UI CARDS (ROUNDED 20px) --- */
+        .card-admin { 
             border: none; 
-            border-radius: 15px; 
+            border-radius: 20px; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            background: #fff;
             margin-bottom: 25px;
-        }
-        .card-header { 
-            background: #fff; 
-            border-bottom: 1px solid #eee; 
-            padding: 15px 20px; 
-            font-weight: bold;
-            border-radius: 15px 15px 0 0 !important;
+            overflow: hidden; /* Agar tabel di dalam tidak keluar dari radius */
         }
 
-        /* Badge Status */
-        .status-online { font-size: 0.75rem; color: rgba(255,255,255,0.7); }
+        /* Tabel Styling */
+        .table-responsive { border-radius: 20px; }
+        .table { margin-bottom: 0; }
+        .table thead th { 
+            background-color: #fafafa; 
+            border-bottom: 2px solid #eee; 
+            padding: 15px; 
+            color: #666;
+        }
+        .table tbody td { padding: 15px; vertical-align: middle; border-bottom: 1px solid #f8f9fa; }
+
+        /* Input Date Custom */
+        .form-control-custom {
+            border-radius: 50px;
+            border: 1px solid #ddd;
+            padding: 8px 20px;
+        }
+        .form-control-custom:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 0.25rem rgba(200, 90, 46, 0.25); }
     </style>
 </head>
 <body>
@@ -101,12 +131,12 @@
 <nav class="navbar navbar-dark shadow-sm">
     <div class="container-fluid px-4 d-flex justify-content-between align-items-center">
         <a class="navbar-brand d-flex align-items-center" href="#">
-            <img src="../Asset/logo.jpeg" alt="Logo" width="40" height="40" class="rounded-circle me-3 border border-white">
-            <span>SABAR COFFEE <small class="fw-light ms-2 text-white-50">| Management Dashboard</small></span>
+            <img src="../Asset/logo.jpeg" alt="Logo" width="45" height="45" class="me-3 shadow-sm" style="border-radius: 50%; border: 2px solid rgba(255,255,255,0.8);">
+            <span>SABAR COFFEE <small class="fw-light ms-2 text-white-50 d-none d-md-inline">| Management Dashboard</small></span>
         </a>
-        <div class="text-white text-end">
-            <div class="fw-bold" id="clock">00:00:00</div>
-            <div class="status-online"><i class="bi bi-circle-fill text-success me-1"></i> Admin Online</div>
+        <div class="text-white text-end d-flex align-items-center">
+            <div class="fw-bold fs-5 me-3" id="clock">00:00:00</div>
+            <div class="small text-white-50"><i class="bi bi-circle-fill text-success me-1"></i> Admin Online</div>
         </div>
     </div>
 </nav>
@@ -114,22 +144,24 @@
 <div class="admin-wrapper">
     <div class="sidebar">
         <div class="sidebar-brand d-none d-md-block">
-            <img src="../Asset/logo.jpeg" alt="Logo" width="60" height="60" class="rounded-circle mb-2 border border-white shadow">
-            <h6 class="m-0 fw-bold">Admin Panel</h6>
+            <img src="../Asset/logo.jpeg" alt="Logo" width="70" height="70" class="mb-3 shadow" style="border-radius: 50%; border: 3px solid #fff;">
+            <h6 class="m-0 fw-bold letter-spacing-1">ADMIN PANEL</h6>
         </div>
-        <div class="nav flex-column nav-pills mt-3">
+        <div class="nav flex-column nav-pills mt-4">
             <button class="nav-link active" id="tab-transactions" data-bs-toggle="pill" data-bs-target="#content-transactions">
                 <i class="bi bi-receipt me-2"></i> Riwayat Transaksi
             </button>
+            
             <button class="nav-link" id="tab-stock" data-bs-toggle="pill" data-bs-target="#content-stock">
-                <i class="bi bi-box-seize me-2"></i> Manajemen Stok
+                <i class="bi bi-boxes me-2"></i> Manajemen Stok
             </button>
+            
             <button class="nav-link" id="tab-report" data-bs-toggle="pill" data-bs-target="#content-report">
                 <i class="bi bi-graph-up-arrow me-2"></i> Laporan Penjualan
             </button>
         </div>
-        <div class="mt-auto p-3 text-center border-top">
-            <small class="text-muted">Sabar Coffee v2.0</small>
+        <div class="mt-auto p-4 text-center">
+            <small class="text-muted fw-bold">Sabar Coffee v2.0</small>
         </div>
     </div>
 
@@ -138,18 +170,18 @@
             
             <div class="tab-pane fade show active" id="content-transactions">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="fw-bold m-0">Riwayat Transaksi</h4>
-                    <input type="date" id="filter-date" class="form-control w-auto shadow-sm" onchange="loadTransactions()">
+                    <h3 class="fw-bold m-0 text-dark">Riwayat Transaksi</h3>
+                    <input type="date" id="filter-date" class="form-control form-control-custom w-auto shadow-sm" onchange="loadTransactions()">
                 </div>
-                <div class="card">
+                <div class="card-admin shadow-sm">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
-                            <thead class="table-light">
+                            <thead>
                                 <tr>
                                     <th>Antrean</th>
-                                    <th>Waktu</th>
-                                    <th>Menu</th>
-                                    <th>Total</th>
+                                    <th>Waktu Masuk</th>
+                                    <th>Menu Dipesan</th>
+                                    <th>Total Bayar</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -161,22 +193,22 @@
             </div>
 
             <div class="tab-pane fade" id="content-stock">
-                <h4 class="fw-bold mb-4">Manajemen Stok & Menu</h4>
-                <div id="stock-list" class="row g-3">
+                <h3 class="fw-bold mb-4 text-dark">Manajemen Stok & Menu</h3>
+                <div id="stock-list" class="row g-4">
                     </div>
             </div>
 
             <div class="tab-pane fade" id="content-report">
-                <h4 class="fw-bold mb-4">Laporan Penjualan Harian</h4>
-                <div class="row g-3 mb-4">
+                <h3 class="fw-bold mb-4 text-dark">Laporan Penjualan Harian</h3>
+                <div class="row g-4 mb-4">
                     <div class="col-md-6">
-                        <div class="card p-4 text-center">
-                            <small class="text-muted text-uppercase">Total Pendapatan (Periode Ini)</small>
-                            <h2 class="fw-bold text-brand mt-2" id="stat-total-revenue">Rp 0</h2>
+                        <div class="card-admin p-4 text-center border-top border-brand border-4">
+                            <span class="badge bg-light text-dark mb-2 px-3 py-2 rounded-pill">Total Pendapatan (Periode Ini)</span>
+                            <h1 class="fw-bold text-brand mt-2" id="stat-total-revenue">Rp 0</h1>
                         </div>
                     </div>
                 </div>
-                <div class="card p-4">
+                <div class="card-admin p-4">
                     <div style="height: 350px;">
                         <canvas id="salesChart"></canvas>
                     </div>
@@ -192,93 +224,126 @@
     const apiBaseUrl = "https://sakurasao-coffebreakapi.hf.space";
     let myChart = null;
 
-    // Clock
+    // Jam Real-Time
     setInterval(() => {
         document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID');
     }, 1000);
 
     // Load Transactions
     async function loadTransactions() {
-        const date = document.getElementById("filter-date").value;
-        const res = await fetch(`${apiBaseUrl}/admin/transactions?date=${date}`);
-        const data = await res.json();
-        const list = document.getElementById("transaction-list");
-        
-        list.innerHTML = data.map(o => `
-            <tr>
-                <td class="fw-bold">#${o.queue_number}</td>
-                <td>${new Date(o.created_at).toLocaleTimeString('id-ID')}</td>
-                <td><small>${o.order_items.map(it => `${it.quantity}x ${it.products.name}`).join(', ')}</small></td>
-                <td class="fw-bold">Rp ${o.total_price.toLocaleString()}</td>
-                <td><span class="badge bg-${o.status==='Completed'?'success':(o.status==='Pending'?'warning':'danger')}">${o.status}</span></td>
-            </tr>
-        `).join('');
+        try {
+            const date = document.getElementById("filter-date").value;
+            const res = await fetch(`${apiBaseUrl}/admin/transactions?date=${date}`);
+            const data = await res.json();
+            const list = document.getElementById("transaction-list");
+            
+            if(data.length === 0) {
+                list.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">Tidak ada transaksi pada tanggal ini.</td></tr>`;
+                return;
+            }
+
+            list.innerHTML = data.map(o => `
+                <tr>
+                    <td class="fw-bold text-dark">#${o.queue_number}</td>
+                    <td class="text-muted">${new Date(o.created_at).toLocaleTimeString('id-ID')}</td>
+                    <td>
+                        <ul class="list-unstyled mb-0 small">
+                            ${o.order_items.map(it => `<li><strong>${it.quantity}x</strong> ${it.products.name}</li>`).join('')}
+                        </ul>
+                    </td>
+                    <td class="fw-bold text-brand">Rp ${o.total_price.toLocaleString()}</td>
+                    <td>
+                        <span class="badge rounded-pill bg-${o.status==='Completed'?'success':(o.status==='Pending'?'warning':'danger')} px-3 py-2">
+                            ${o.status}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        } catch(e) { console.error("Gagal load transaksi", e); }
     }
 
     // Load Stock
     async function loadStock() {
-        const res = await fetch(`${apiBaseUrl}/menu`);
-        const data = await res.json();
-        const list = document.getElementById("stock-list");
-        
-        list.innerHTML = data.map(p => `
-            <div class="col-md-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h6 class="fw-bold">${p.name}</h6>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <span class="badge bg-light text-dark">Stok: ${p.stock}</span>
-                            <div class="input-group input-group-sm w-50">
-                                <input type="number" class="form-control" id="add-${p.id}" placeholder="+/-">
-                                <button class="btn btn-brand text-white" onclick="updateStock(${p.id})">Update</button>
+        try {
+            const res = await fetch(`${apiBaseUrl}/menu`);
+            const data = await res.json();
+            const list = document.getElementById("stock-list");
+            
+            list.innerHTML = data.map(p => `
+                <div class="col-md-6 col-lg-4">
+                    <div class="card-admin p-4 h-100 d-flex flex-column">
+                        <h5 class="fw-bold text-dark mb-1">${p.name}</h5>
+                        <p class="small text-muted mb-3">${p.category}</p>
+                        
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="fw-medium text-muted">Sisa Stok:</span>
+                                <span class="badge ${p.stock > 0 ? 'bg-success' : 'bg-danger'} rounded-pill px-3 py-2 fs-6">${p.stock}</span>
+                            </div>
+                            
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="add-${p.id}" placeholder="+/- Jumlah">
+                                <button class="btn btn-brand fw-bold px-4" onclick="updateStock(${p.id})">Update</button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            `).join('');
+        } catch(e) { console.error("Gagal load stok", e); }
     }
 
     async function updateStock(id) {
         const val = document.getElementById(`add-${id}`).value;
         if(!val) return;
-        await fetch(`${apiBaseUrl}/admin/update-stock/${id}`, {
-            method: 'PATCH',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({stock: parseInt(val)})
-        });
-        loadStock();
+        try {
+            await fetch(`${apiBaseUrl}/admin/update-stock/${id}`, {
+                method: 'PATCH',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({stock: parseInt(val)})
+            });
+            loadStock();
+        } catch(e) { alert("Gagal update stok!"); }
     }
 
+    // Load Sales Report Chart
     async function loadSalesReport() {
-        const res = await fetch(`${apiBaseUrl}/admin/sales-report`);
-        const result = await res.json();
-        document.getElementById("stat-total-revenue").innerText = `Rp ${result.total_period.toLocaleString()}`;
-        
-        const ctx = document.getElementById("salesChart").getContext("2d");
-        if (myChart) myChart.destroy();
-        myChart = new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: result.labels,
-                datasets: [{
-                    label: "Pendapatan (Rp)",
-                    data: result.data,
-                    borderColor: "#c85a2e",
-                    backgroundColor: "rgba(200, 90, 46, 0.1)",
-                    fill: true, tension: 0.4, borderWidth: 3
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
+        try {
+            const res = await fetch(`${apiBaseUrl}/admin/sales-report`);
+            const result = await res.json();
+            document.getElementById("stat-total-revenue").innerText = `Rp ${result.total_period.toLocaleString()}`;
+            
+            const ctx = document.getElementById("salesChart").getContext("2d");
+            if (myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: result.labels,
+                    datasets: [{
+                        label: "Pendapatan (Rp)",
+                        data: result.data,
+                        borderColor: "#c85a2e",
+                        backgroundColor: "rgba(200, 90, 46, 0.1)",
+                        fill: true, tension: 0.4, borderWidth: 3,
+                        pointBackgroundColor: "#c85a2e",
+                        pointRadius: 4
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        } catch(e) { console.error("Gagal load chart", e); }
     }
 
-    // Navigasi
+    // Navigasi & Event Listeners
     document.getElementById("tab-transactions").addEventListener("click", loadTransactions);
     document.getElementById("tab-stock").addEventListener("click", loadStock);
     document.getElementById("tab-report").addEventListener("click", () => setTimeout(loadSalesReport, 200));
 
-    // Start
+    // Load data awal saat halaman dibuka
     loadTransactions();
 </script>
 </body>

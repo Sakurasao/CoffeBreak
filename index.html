@@ -4,9 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sabar Coffee - Kedai Digital</title>
+    
+    <link rel="icon" type="image/x-icon" href="Asset/favicon.ico">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" />
-    <link rel="icon" type="image/x-icon" href="Asset/favicon.ico">
     
     <style>
         :root {
@@ -23,19 +25,23 @@
             scroll-behavior: smooth;
         }
 
-        /* --- UI Elements --- */
-        .bg-brand { background-color: var(--brand-primary) !important; }
-        .text-brand { color: var(--brand-primary) !important; }
-        .btn-brand { background-color: var(--brand-primary); color: #fff; border: none; transition: 0.3s; }
-        .btn-brand:hover { background-color: var(--brand-dark); color: #fff; }
+        /* --- NAVBAR (KONSISTEN DENGAN ADMIN/KASIR) --- */
+        .navbar { 
+            background-color: var(--brand-primary) !important; 
+            padding: 12px 0; 
+            border-bottom: 3px solid rgba(0,0,0,0.1);
+        }
+        .navbar-brand { font-weight: 800; letter-spacing: 1px; color: #fff !important; }
+        .nav-link { color: rgba(255,255,255,0.8) !important; font-weight: 500; }
+        .nav-link.active { color: #fff !important; font-weight: 700; }
 
-        /* --- Kategori Capsule --- */
+        /* --- CATEGORY BUTTONS (CAPSULE) --- */
         .btn-category {
             background-color: #fff;
             color: #666;
-            border: 1px solid #ddd;
+            border: 2px solid #eee;
             border-radius: 50px;
-            padding: 8px 20px;
+            padding: 8px 25px;
             font-weight: 600;
             transition: 0.3s;
             white-space: nowrap;
@@ -44,19 +50,23 @@
             background-color: var(--brand-primary) !important;
             color: white !important;
             border-color: var(--brand-primary);
+            box-shadow: 0 4px 12px rgba(200, 90, 46, 0.2);
         }
 
-        /* --- Card Menu --- */
+        /* --- CARD MENU (CLEAN & ROUNDED 20px) --- */
         .card-menu {
             border: none;
             border-radius: 20px;
             overflow: hidden;
             background: #fff;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
+            transition: all 0.3s ease;
             height: 100%;
         }
-        .card-menu:hover { transform: translateY(-5px); }
+        .card-menu:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+        }
 
         .card-img-container {
             width: 100%;
@@ -68,25 +78,30 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: center;
+            transition: 0.5s;
         }
+        .card-menu:hover .card-img-top { transform: scale(1.1); }
 
         .btn-add-menu {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 50% !important;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 0;
+            background-color: var(--brand-primary);
+            color: white;
+            border: none;
+            transition: 0.3s;
         }
+        .btn-add-menu:hover { background-color: var(--brand-dark); transform: rotate(90deg); }
 
-        /* --- Sidebar Cart (Sticky) --- */
+        /* --- STICKY CART SIDEBAR --- */
         .sticky-cart {
             position: sticky;
-            top: 90px;
-            max-height: calc(100vh - 110px);
-            overflow-y: auto;
+            top: 100px;
+            max-height: calc(100vh - 130px);
         }
         
         #cart-summary {
@@ -97,52 +112,58 @@
         }
 
         .cart-item-row {
-            border-bottom: 1px dashed #ddd;
-            padding: 12px 0;
+            border-bottom: 1px dashed #eee;
+            padding: 15px 0;
         }
 
         .btn-qty {
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 30px;
             border-radius: 50% !important;
             padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
+            border: 1px solid #ddd;
+            background: #fff;
         }
 
-        /* Layout Transition */
-        .transition-column { transition: all 0.3s ease-in-out; }
+        /* --- FOOTER --- */
+        footer { background-color: var(--brand-dark); color: #fff; padding: 30px 0; }
 
-        footer { background-color: var(--brand-dark); color: #fff; }
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--brand-bg); }
+        ::-webkit-scrollbar-thumb { background: var(--brand-muted); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--brand-primary); }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-brand sticky-top shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top shadow-sm">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center fw-bold" href="#">
-                <img src="Asset/logo.jpeg" alt="logo" height="40" class="me-2" style="border-radius: 50%;" />
+                <img src="Asset/logo.jpeg" alt="logo" height="40" width="40" class="me-2 rounded-circle border border-white" />
                 SABAR COFFEE
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navMain">
                 <ul class="navbar-nav ms-auto fw-medium">
                     <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="#menu">Order</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#menu">Order Now</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">Our Story</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <header class="py-5 bg-white mb-4 shadow-sm">
+    <header class="py-5 bg-white mb-4 border-bottom shadow-sm">
         <div class="container text-center">
-            <h1 class="display-4 fw-bold">Tradisi <span class="text-brand">Lokal</span></h1>
-            <p class="lead text-muted">Nikmati jeda sejenak dengan kopi otentik Sidoarjo.</p>
+            <h1 class="display-4 fw-bold">Tradisi <span style="color: var(--brand-primary);">Lokal</span></h1>
+            <p class="lead text-muted">Nikmati jeda sejenak dengan racikan kopi otentik dari hati Sidoarjo.</p>
         </div>
     </header>
 
@@ -150,54 +171,56 @@
         
         <div id="announcement-section" class="container mb-5 d-none">
             <div class="p-4 rounded-4 bg-white shadow-sm border-start border-brand border-5">
-                <h5 class="text-brand fw-bold mb-2"><i class="bi bi-megaphone-fill me-2"></i>Warta Sabar</h5>
-                <p id="text-pengumuman" class="mb-1 fw-medium"></p>
+                <h5 class="fw-bold mb-2" style="color: var(--brand-primary);"><i class="bi bi-megaphone-fill me-2"></i>Warta Sabar</h5>
+                <p id="text-pengumuman" class="mb-1 fw-medium text-dark"></p>
                 <small id="text-jadwal" class="text-muted"></small>
             </div>
         </div>
 
         <div class="row g-4 justify-content-center">
             
-            <div id="menu-column" class="col-lg-8 transition-column">
+            <div id="menu-column" class="col-lg-8">
                 <section id="menu">
                     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 px-2">
-                        <h2 class="fw-bold text-brand mb-3 mb-md-0">Menu Pilihan</h2>
-                        <div id="group-buttons" class="d-flex gap-2 overflow-auto pb-2">
+                        <h3 class="fw-bold text-dark m-0">Menu Pilihan</h3>
+                        <div id="group-buttons" class="d-flex gap-2 overflow-auto py-2">
                             </div>
                     </div>
 
-                    <div id="menu-cards" class="row g-3">
+                    <div id="menu-cards" class="row g-3 g-md-4">
                         <div class="col-12 text-center py-5">
-                            <div class="spinner-border text-brand" role="status"></div>
-                            <p class="mt-2 text-muted">Menyiapkan menu...</p>
+                            <div class="spinner-border" style="color: var(--brand-primary);" role="status"></div>
+                            <p class="mt-2 text-muted">Menyiapkan racikan terbaik...</p>
                         </div>
                     </div>
                 </section>
             </div>
 
-            <div id="cart-column" class="col-md-4 transition-column">
+            <div id="cart-column" class="col-md-4">
                 <div class="sticky-cart">
-                    <div id="cart-summary" class="card shadow-sm">
+                    <div id="cart-summary" class="card">
                         <div class="card-body p-4">
-                            <h5 class="fw-bold mb-4 border-bottom pb-2">
-                                <i class="bi bi-bag-heart-fill text-brand me-2"></i>Pesanan Kamu
+                            <h5 class="fw-bold mb-4 border-bottom pb-3">
+                                <i class="bi bi-bag-heart-fill me-2" style="color: var(--brand-primary);"></i>Pesanan Kamu
                             </h5>
                             
-                            <div id="cart-items" class="mb-4">
+                            <div id="cart-items" class="mb-4" style="min-height: 100px;">
                                 </div>
                             
-                            <div class="p-3 bg-light rounded-4 mb-4">
+                            <div class="p-3 mb-4" style="background-color: var(--brand-bg); border-radius: 15px;">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="small fw-bold text-muted">Total Bayar:</span>
-                                    <h4 class="fw-bold text-brand mb-0" id="total-price">Rp 0</h4>
+                                    <h3 class="fw-bold m-0" style="color: var(--brand-primary);" id="total-price">Rp 0</h3>
                                 </div>
                             </div>
 
-                            <div id="order-alert" class="alert alert-success d-none mb-3 small"></div>
+                            <div id="order-alert" class="alert alert-success d-none mb-3 shadow-sm border-0" style="border-radius: 12px;"></div>
 
                             <div class="d-grid gap-2">
-                                <button id="btn-order" class="btn btn-brand btn-lg rounded-pill fw-bold py-2 shadow">Kirim Pesanan</button>
-                                <button id="btn-cancel" class="btn btn-outline-secondary btn-sm rounded-pill border-0">Batal Pesan</button>
+                                <button id="btn-order" class="btn btn-brand btn-lg rounded-pill fw-bold py-3 shadow">
+                                    <i class="bi bi-send-check me-2"></i>Kirim Pesanan
+                                </button>
+                                <button id="btn-cancel" class="btn btn-link btn-sm text-decoration-none text-muted">Batal Pesan</button>
                             </div>
                         </div>
                     </div>
@@ -214,17 +237,17 @@
                          style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover;" 
                          alt="About Sabar Coffee" />
                 </div>
-                <div class="col-md-6">
-                    <span class="badge bg-brand mb-2">Our Heritage</span>
+                <div class="col-md-6 ps-md-5">
+                    <span class="badge mb-2 px-3 py-2 rounded-pill" style="background-color: var(--brand-primary);">Our Heritage</span>
                     <h2 class="fw-bold mb-4">Sidoarjo Berawal Dari Kesabaran</h2>
-                    <p class="text-dark"><strong>Sabar Coffee</strong> adalah perwujudan dari rasa cinta kami terhadap kopi nusantara. Dimulai dari pojok kota Sidoarjo, kami menggabungkan rasa tradisional dengan sistem <strong>Full-Stack Digital</strong> untuk efisiensi antrean yang transparan.</p>
+                    <p class="text-dark"><strong>Sabar Coffee</strong> adalah perwujudan dari rasa cinta kami terhadap kopi nusantara. Dimulai dari pojok kota Sidoarjo, kami menggabungkan rasa tradisional dengan sistem digital yang transparan dan efisien.</p>
                     <div class="row g-3 mt-4 text-center">
                         <div class="col-6 p-3 bg-white rounded-4 shadow-sm border">
-                            <h4 class="fw-bold text-brand mb-0">20+</h4>
-                            <small class="text-muted">Menu Nusantara</small>
+                            <h4 class="fw-bold mb-0" style="color: var(--brand-primary);">20+</h4>
+                            <small class="text-muted">Menu Pilihan</small>
                         </div>
                         <div class="col-6 p-3 bg-white rounded-4 shadow-sm border">
-                            <h4 class="fw-bold text-brand mb-0">100%</h4>
+                            <h4 class="fw-bold mb-0" style="color: var(--brand-primary);">100%</h4>
                             <small class="text-muted">Digital Service</small>
                         </div>
                     </div>
@@ -234,8 +257,8 @@
 
     </main>
 
-    <footer class="py-4 mt-5 border-top bg-brand text-white">
-        <div class="container text-center">
+    <footer class="text-center">
+        <div class="container">
             <h6 class="fw-bold mb-1">SABAR COFFEE</h6>
             <p class="mb-0 small opacity-75">&copy; 2026 Sidoarjo Digital Service. Crafted with Heart.</p>
         </div>
@@ -249,22 +272,22 @@
 
         async function initDashboard() {
             try {
-                // Load Info
+                // 1. Load Info (data.json)
                 const resInfo = await fetch(`${apiBaseUrl}/info`);
                 const dataInfo = await resInfo.json();
                 if (dataInfo.pengumuman) {
                     document.getElementById("announcement-section").classList.remove("d-none");
                     document.getElementById("text-pengumuman").innerText = dataInfo.pengumuman;
-                    document.getElementById("text-jadwal").innerText = `Jadwal: ${dataInfo.jadwal_buka}`;
+                    document.getElementById("text-jadwal").innerText = `Jam Operasional: ${dataInfo.jadwal_buka}`;
                 }
 
-                // Load Menu
+                // 2. Load Menu
                 const resMenu = await fetch(`${apiBaseUrl}/menu`);
                 menuData = await resMenu.json();
                 
                 renderCategoryButtons();
                 renderCards();
-                updateCartUI(); // Inisialisasi tampilan keranjang kosong
+                updateCartUI();
             } catch (err) { console.error("Init Error:", err); }
         }
 
@@ -272,7 +295,7 @@
             const categories = ["Semua", ...new Set(menuData.map(m => m.category))];
             const container = document.getElementById("group-buttons");
             container.innerHTML = categories.map(cat => `
-                <button class="btn btn-category ${cat === 'Semua' ? 'active' : ''}" 
+                <button class="btn-category ${cat === 'Semua' ? 'active' : ''}" 
                         onclick="filterMenu('${cat}', this)">${cat}</button>
             `).join("");
         }
@@ -297,8 +320,8 @@
                             <h6 class="fw-bold mb-1 text-truncate" title="${item.name}">${item.name}</h6>
                             <p class="small text-muted mb-3">${item.category}</p>
                             <div class="mt-auto d-flex justify-content-between align-items-center">
-                                <span class="fw-bold text-brand small">Rp ${item.price.toLocaleString()}</span>
-                                <button class="btn btn-brand btn-add-menu shadow" onclick="addToCart(${item.id})">
+                                <span class="fw-bold fs-6" style="color: var(--brand-primary);">Rp ${item.price.toLocaleString()}</span>
+                                <button class="btn btn-add-menu shadow" onclick="addToCart(${item.id})">
                                     <i class="bi bi-plus-lg"></i>
                                 </button>
                             </div>
@@ -308,7 +331,7 @@
             `).join("");
         }
 
-        // --- Logic Cart ---
+        // --- Logic Keranjang Belanja ---
         function addToCart(id) {
             const item = menuData.find(m => m.id === id);
             if (!cart[id]) cart[id] = { ...item, qty: 1 };
@@ -324,11 +347,6 @@
             }
         }
 
-        function removeFromCart(id) {
-            delete cart[id];
-            updateCartUI();
-        }
-
         function updateCartUI() {
             const list = document.getElementById("cart-items");
             const items = Object.values(cart);
@@ -336,17 +354,14 @@
             if (items.length > 0) {
                 list.innerHTML = items.map(it => `
                     <div class="cart-item-row d-flex justify-content-between align-items-center">
-                        <div style="max-width: 55%;">
+                        <div style="max-width: 60%;">
                             <span class="fw-bold small d-block text-truncate">${it.name}</span>
-                            <span class="text-brand extra-small fw-bold">Rp ${it.price.toLocaleString()}</span>
+                            <span class="extra-small fw-bold" style="color: var(--brand-primary);">Rp ${it.price.toLocaleString()}</span>
                         </div>
-                        <div class="d-flex align-items-center gap-1">
-                            <button class="btn btn-outline-secondary btn-qty" onclick="decreaseQty(${it.id})">-</button>
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn-qty" onclick="decreaseQty(${it.id})">-</button>
                             <span class="small fw-bold px-1">${it.qty}</span>
-                            <button class="btn btn-outline-secondary btn-qty" onclick="addToCart(${it.id})">+</button>
-                            <button class="btn text-danger ms-1 p-0 border-0 bg-transparent" onclick="removeFromCart(${it.id})">
-                                <i class="bi bi-trash"></i>
-                            </button>
+                            <button class="btn-qty" onclick="addToCart(${it.id})">+</button>
                         </div>
                     </div>
                 `).join("");
@@ -357,21 +372,21 @@
                 list.innerHTML = `
                     <div class="text-center py-5">
                         <i class="bi bi-cart text-muted opacity-25" style="font-size: 3rem;"></i>
-                        <p class="text-muted small mt-2">Keranjang belanja kosong.<br>Silakan pilih menu favoritmu.</p>
+                        <p class="text-muted small mt-2">Keranjang kosong.<br>Pilih menu di samping.</p>
                     </div>
                 `;
                 document.getElementById("total-price").innerText = `Rp 0`;
             }
         }
 
-        // --- Kirim Order ---
+        // --- Proses Kirim Order ---
         document.getElementById("btn-order").addEventListener("click", async () => {
             const items = Object.values(cart);
-            if (items.length === 0) return alert("Keranjang masih kosong!");
+            if (items.length === 0) return alert("Keranjang belanja kosong!");
             
             const btn = document.getElementById("btn-order");
             btn.disabled = true;
-            btn.innerText = "Mengirim...";
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengirim...';
 
             const queueNum = "Q-" + Math.floor(1000 + Math.random() * 9000);
             const payload = {
@@ -394,15 +409,14 @@
                     updateCartUI();
                     setTimeout(() => { alertEl.classList.add("d-none"); }, 8000);
                 }
-            } catch (err) { alert("Dapur sedang sibuk, coba lagi nanti."); }
-            finally { btn.disabled = false; btn.innerText = "Kirim Pesanan"; }
+            } catch (err) { alert("Dapur sedang sibuk, silakan coba beberapa saat lagi."); }
+            finally { btn.disabled = false; btn.innerHTML = '<i class="bi bi-send-check me-2"></i>Kirim Pesanan'; }
         });
 
         document.getElementById("btn-cancel").addEventListener("click", () => {
             if(confirm("Batalkan semua pesanan?")) {
                 cart = {}; 
                 updateCartUI();
-                document.getElementById("order-alert").classList.add("d-none");
             }
         });
 

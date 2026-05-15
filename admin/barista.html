@@ -6,20 +6,42 @@
     <title>Barista Station - Sabar Coffee</title>
     
     <link rel="icon" type="image/x-icon" href="../Asset/favicon.ico">
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
     
     <style>
-        :root { --brand: #c85a2e; }
-        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; padding-top: 90px; }
-        .navbar { background-color: var(--brand) !important; border-bottom: 2px solid rgba(0,0,0,0.1); padding: 12px 0; }
+        :root {
+            --brand-primary: #c85a2e;
+            --brand-dark: #8e3f1a;
+            --brand-bg: #fbf6eb;
+            --brand-muted: #eadfcf;
+        }
+
+        body { 
+            background-color: var(--brand-bg); 
+            font-family: "Segoe UI", Roboto, sans-serif; 
+            color: #333;
+            min-height: 100vh;
+            padding-top: 100px; /* Jarak untuk navbar fixed */
+        }
         
-        /* Gaya Kartu Barista Lama */
+        /* --- UI Elements Konsisten Index --- */
+        .bg-brand { background-color: var(--brand-primary) !important; }
+        .text-brand { color: var(--brand-primary) !important; }
+        
+        .btn-brand { background-color: var(--brand-primary); color: #fff; border: none; transition: 0.3s; }
+        .btn-brand:hover { background-color: var(--brand-dark); color: #fff; }
+
+        /* --- NAVBAR --- */
+        .navbar { border-bottom: 3px solid rgba(0,0,0,0.1); padding: 12px 0; }
+        .navbar-brand { font-weight: 800; letter-spacing: 1px; color: #fff !important; }
+
+        /* --- GAYA KARTU BARISTA ROUNDED 20px --- */
         .barista-card { 
             border: none; 
-            border-radius: 15px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+            border-radius: 20px; 
+            background: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
             position: relative; 
             overflow: hidden; 
             transition: 0.3s; 
@@ -27,81 +49,74 @@
         
         /* Highlight khusus untuk Pesanan Paling Lama (Prioritas #1) */
         .barista-card.priority-one { 
-            border: 3px solid var(--brand); 
-            transform: scale(1.02); /* Sedikit diperbesar agar menonjol */
+            border: 3px solid var(--brand-primary); 
+            transform: scale(1.02); 
+            box-shadow: 0 10px 25px rgba(200, 90, 46, 0.15);
         }
         
-        /* Label Urutan Berwarna */
+        /* Label Urutan Pojok */
         .badge-urutan { 
             position: absolute; 
             top: 0; 
             left: 0; 
-            background: var(--brand); 
+            background: var(--brand-primary); 
             color: white; 
-            padding: 5px 15px; 
-            border-bottom-right-radius: 15px; 
+            padding: 8px 20px; 
+            border-bottom-right-radius: 20px; 
             font-weight: bold; 
+            font-size: 0.9rem;
             z-index: 10; 
         }
         
-        /* Ukuran Nomor Antrean Besar */
         .queue-number { 
-            font-size: 2.2rem; 
-            font-weight: 800; 
+            font-size: 2.5rem; 
+            font-weight: 900; 
             color: #333; 
-            margin-top: 20px; 
+            margin-top: 15px; 
         }
         
-        /* Desain Tombol Selesai */
-        .btn-finish { 
-            background: var(--brand); 
-            color: white; 
-            font-weight: bold; 
-            padding: 12px; 
-            border-radius: 10px; 
-            border: none; 
-            transition: 0.3s; 
-        }
-        .btn-finish:hover { background: #a64a26; }
-        
-        /* Container Daftar Item */
+        /* Kotak Rincian Pesanan */
         .item-list { 
-            background: #f8f9fa; 
-            border-radius: 10px; 
+            background: #fafafa; 
+            border: 1px solid #eee;
+            border-radius: 15px; /* Rounded konsisten */
             padding: 15px; 
             text-align: left; 
+        }
+
+        .btn-finish {
+            border-radius: 15px;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
         }
     </style>
 </head>
 <body>
-<nav class="navbar navbar-dark fixed-top shadow-sm">
-    <div class="container-fluid px-4 d-flex justify-content-between align-items-center">
+
+<nav class="navbar navbar-dark bg-brand fixed-top shadow-sm">
+    <div class="container d-flex justify-content-between align-items-center">
         <a class="navbar-brand d-flex align-items-center" href="#">
-            <img src="../Asset/logo.jpeg" alt="Logo" width="40" height="40" class="rounded-circle me-3 border border-white">
-            <span>SABAR COFFEE <small class="fw-light ms-2 text-white-50">| Barista Station</small></span>
+            <img src="../Asset/logo.jpeg" alt="Logo" width="40" height="40" class="me-2" style="border-radius: 50%; border: 2px solid rgba(255,255,255,0.8);">
+            SABAR COFFEE <small class="fw-light ms-2 text-white-50 d-none d-sm-inline">| Barista Station</small>
         </a>
-        <div class="text-white text-end">
-            <div id="status-badge" class="badge bg-white text-dark small mb-1">System Active</div>
-            <div class="small text-white-50" id="last-sync">Sync: -</div>
+        <div class="text-white text-end d-flex align-items-center">
+            <div id="status-badge" class="badge bg-white text-brand px-3 py-2 rounded-pill shadow-sm me-3">Sistem Aktif</div>
+            <div class="small text-white-50 fw-medium" id="last-sync">Sync: -</div>
         </div>
     </div>
 </nav>
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold mb-0 text-brand"><i class="bi bi-cup-hot-fill me-2"></i>Dapur Barista</h2>
-            <p class="text-muted small">Menampilkan pesanan yang sudah lunas (Urutan #1 adalah prioritas).</p>
-        </div>
-        <div class="text-end">
-            <div id="status-badge" class="badge bg-success">Sistem Aktif</div>
-            <div class="small text-muted mt-1" id="last-sync">Terakhir sinkron: -</div>
-        </div>
+
+<div class="container pb-5">
+    <div class="mb-4 text-center text-md-start">
+        <h3 class="fw-bold text-dark mb-1"><i class="bi bi-cup-hot-fill me-2 text-brand"></i>Antrean Dapur</h3>
+        <p class="text-muted small">Pesanan yang sudah dilunaskan di kasir otomatis muncul di sini. (Urutan #1 prioritas)</p>
     </div>
 
     <div id="barista-list" class="row g-4">
         <div class="col-12 text-center py-5">
             <div class="spinner-border text-brand" role="status"></div>
-            <p class="mt-2 text-muted">Sinkronisasi data dapur...</p>
+            <p class="mt-2 text-muted fw-medium">Menyinkronkan data dapur...</p>
         </div>
     </div>
 </div>
@@ -114,7 +129,6 @@
     // --- LOAD PESANAN PENDING ---
     async function loadBaristaOrders() {
         try {
-            // Ambil data transaksi
             const res = await fetch(`${apiBaseUrl}/admin/transactions`);
             const data = await res.json();
             const list = document.getElementById('barista-list');
@@ -122,51 +136,56 @@
             // FILTER: Hanya ambil yang statusnya 'Pending' (Sudah Bayar)
             let pendingOrders = data.filter(o => o.status === 'Pending');
 
-            // URUTKAN SECARA MANUAL (FIFO): Dari yang paling lama dibuat (created_at)
+            // URUTKAN SECARA MANUAL (FIFO): Dari yang paling lama dibuat
             pendingOrders.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
             if(pendingOrders.length === 0) {
                 list.innerHTML = `
-                    <div class="col-12 text-center py-5">
-                        <i class="bi bi-emoji-smile text-muted" style="font-size: 3rem;"></i>
-                        <h4 class="text-muted mt-3">Belum ada pesanan yang perlu dibuat.</h4>
+                    <div class="col-12 text-center py-5 mt-5">
+                        <i class="bi bi-emoji-smile text-muted opacity-50" style="font-size: 4rem;"></i>
+                        <h4 class="text-muted mt-3 fw-bold">Dapur Kosong</h4>
+                        <p class="text-muted">Belum ada pesanan masuk yang perlu diracik.</p>
                     </div>`;
                 return;
             }
 
             // Render ke HTML
             list.innerHTML = pendingOrders.map((order, index) => `
-                <div class="col-md-4">
+                <div class="col-md-6 col-lg-4">
                     <div class="card barista-card h-100 ${index === 0 ? 'priority-one' : ''}">
                         <div class="badge-urutan">Urutan #${index + 1}</div>
                         
-                        <div class="card-body text-center pt-4">
-                            <div class="queue-number">${order.queue_number}</div>
-                            <div class="small text-muted mb-3">
+                        <div class="card-body text-center pt-5">
+                            <div class="small text-muted text-uppercase fw-bold" style="letter-spacing: 1px;">Antrean</div>
+                            <div class="queue-number mb-2">${order.queue_number}</div>
+                            <div class="small text-muted mb-4">
                                 <i class="bi bi-clock me-1"></i> Masuk: ${new Date(order.created_at).toLocaleTimeString('id-ID')}
                             </div>
                             
                             <div class="item-list mb-4">
                                 <ul class="list-unstyled mb-0">
                                     ${order.order_items.map(it => `
-                                        <li class="d-flex justify-content-between mb-2">
-                                            <span><strong>${it.quantity}x</strong> ${it.products.name}</span>
+                                        <li class="d-flex justify-content-between mb-2 pb-2 border-bottom border-light">
+                                            <span class="fw-bold text-dark">${it.quantity}x</span>
+                                            <span class="text-end text-muted">${it.products.name}</span>
                                         </li>
                                     `).join('')}
                                 </ul>
                             </div>
 
-                            <button class="btn btn-finish w-100 shadow" onclick="completeAndCall(${order.id}, '${order.queue_number}')">
-                                <i class="bi bi-check-lg me-2"></i>Selesai & Panggil
+                            <button class="btn btn-brand btn-finish w-100 shadow-sm" onclick="completeAndCall(${order.id}, '${order.queue_number}')">
+                                <i class="bi bi-check2-circle me-2"></i>Selesai & Panggil
                             </button>
                         </div>
                     </div>
                 </div>
             `).join('');
 
-            document.getElementById('last-sync').innerText = 'Terakhir sinkron: ' + new Date().toLocaleTimeString('id-ID');
+            document.getElementById('last-sync').innerText = 'Sync: ' + new Date().toLocaleTimeString('id-ID');
+            document.getElementById('status-badge').className = 'badge bg-white text-brand px-3 py-2 rounded-pill shadow-sm me-3';
+            document.getElementById('status-badge').innerText = 'Sistem Aktif';
         } catch (err) {
-            document.getElementById('status-badge').className = 'badge bg-danger';
+            document.getElementById('status-badge').className = 'badge bg-danger text-white px-3 py-2 rounded-pill shadow-sm me-3';
             document.getElementById('status-badge').innerText = 'Koneksi Error';
             console.error("Gagal sinkronisasi dapur:", err);
         }
@@ -174,14 +193,14 @@
 
     // --- SELESAIKAN PESANAN ---
     async function completeAndCall(orderId, queueNum) {
-        if(!confirm(`Konfirmasi pesanan ${queueNum} sudah selesai disiapkan?`)) return;
+        if(!confirm(`Konfirmasi pesanan ${queueNum} sudah selesai diracik?`)) return;
 
         try {
             // Update status di API jadi 'Completed'
             const res = await fetch(`${apiBaseUrl}/admin/order-complete/${orderId}`, { method: 'PATCH' });
             if(res.ok) {
                 // Fitur Text-to-Speech agar customer dengar panggilannya
-                const voice = new SpeechSynthesisUtterance(`Panggilan untuk nomor antrean ${queueNum}. Pesanan Anda sudah siap.`);
+                const voice = new SpeechSynthesisUtterance(`Panggilan untuk antrean nomor ${queueNum}. Pesanan Anda sudah siap diambil.`);
                 voice.lang = 'id-ID';
                 window.speechSynthesis.speak(voice);
 
