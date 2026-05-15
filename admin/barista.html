@@ -118,8 +118,8 @@
                                     `).join('')}
                                 </ul>
                             </div>
-                            <button class="btn btn-brand btn-finish w-100 shadow-sm" onclick="completeAndCall(${order.id}, '${order.queue_number}')">
-                                <i class="bi bi-check2-circle me-2"></i>Selesai & Panggil
+                            <button class="btn btn-brand btn-finish w-100 shadow-sm" onclick="completeOrder(${order.id})">
+                                <i class="bi bi-check2-circle me-2"></i>Selesai
                             </button>
                         </div>
                     </div>
@@ -135,14 +135,11 @@
         }
     }
 
-    async function completeAndCall(orderId, queueNum) {
-        if(!confirm(`Konfirmasi pesanan ${queueNum} sudah selesai disiapkan?`)) return;
+    async function completeOrder(orderId) {
+        // Langsung hajar API, tidak ada pop-up confirm() lagi
         try {
             const res = await fetch(`${apiBaseUrl}/admin/order-complete/${orderId}`, { method: 'PATCH' });
             if(res.ok) {
-                const voice = new SpeechSynthesisUtterance(`Panggilan untuk antrean nomor ${queueNum}. Pesanan Anda sudah siap diambil.`);
-                voice.lang = 'id-ID';
-                window.speechSynthesis.speak(voice);
                 lastPendingData = "";
                 loadBaristaOrders(); 
             } else { alert("Gagal memperbarui status pesanan."); }

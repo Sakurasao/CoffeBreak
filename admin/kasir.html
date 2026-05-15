@@ -219,22 +219,23 @@
         const cash = tempCashInputs[id];
         const totalText = document.getElementById(`cash-${id}`).closest('.card-kasir').querySelector('.price-total').innerText;
         const total = parseInt(totalText.replace(/\D/g,''));
+        
+        // Peringatan ini tetap ada karena bukan konfirmasi, melainkan validasi jika uangnya kurang (mencegah error minus)
         if (!cash || cash < total) { alert("Uang pembayaran kurang atau belum diisi!"); return; }
-        if(confirm(`Selesaikan pembayaran antrean ${q}?`)) { 
-            await fetch(`${apiBaseUrl}/admin/confirm-payment/${id}`, {method:'PATCH'}); 
-            delete tempCashInputs[id];
-            lastUnpaidData = "";
-            loadUnpaid(); 
-        } 
+        
+        // Eksekusi langsung tanpa pop-up konfirmasi
+        await fetch(`${apiBaseUrl}/admin/confirm-payment/${id}`, {method:'PATCH'}); 
+        delete tempCashInputs[id];
+        lastUnpaidData = "";
+        loadUnpaid(); 
     }
 
     async function cancel(id) { 
-        if(confirm("Hapus pesanan ini? Stok akan otomatis kembali.")) { 
-            await fetch(`${apiBaseUrl}/admin/cancel-order/${id}`, {method:'DELETE'}); 
-            delete tempCashInputs[id];
-            lastUnpaidData = "";
-            loadUnpaid(); 
-        } 
+        // Eksekusi langsung tanpa pop-up konfirmasi
+        await fetch(`${apiBaseUrl}/admin/cancel-order/${id}`, {method:'DELETE'}); 
+        delete tempCashInputs[id];
+        lastUnpaidData = "";
+        loadUnpaid(); 
     }
 
     function printReceipt(o) {
