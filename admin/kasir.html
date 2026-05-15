@@ -10,14 +10,40 @@
     <style>
         :root { --brand: #c85a2e; }
         body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        
         .card-kasir { border: none; border-radius: 15px; border-top: 5px solid #dc3545; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .price-total { color: var(--brand); font-weight: 800; font-size: 1.3rem; }
-        .item-list { font-size: 0.9rem; border-top: 1px dashed #ddd; padding-top: 10px; }
-        @media print { body * { visibility: hidden; } #print-area, #print-area * { visibility: visible; } #print-area { position: absolute; left: 0; top: 0; width: 100%; } }
+        
+        /* --- STYLE KHUSUS STRUK KASIR --- */
+        #print-area { 
+            display: none; /* Sembunyikan di layar normal */
+        }
+
+        @media print {
+            /* Sembunyikan semua elemen di layar kecuali area struk */
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; display: block !important; }
+            #print-area { 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 100%; 
+                margin: 0;
+                padding: 10px;
+                color: #000;
+                font-family: 'Courier New', Courier, monospace;
+            }
+            .no-print { display: none !important; }
+        }
+
+        .receipt-header { text-align: center; margin-bottom: 10px; border-bottom: 1px dashed #000; padding-bottom: 10px; }
+        .receipt-footer { text-align: center; margin-top: 10px; border-top: 1px dashed #000; padding-top: 10px; }
+        .receipt-line { border-top: 1px dashed #000; margin: 5px 0; }
     </style>
 </head>
 <body>
-<div class="container py-4">
+
+<div class="container py-4 no-print">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold"><i class="bi bi-wallet2 me-2 text-danger"></i>Layar Kasir</h2>
         <span class="badge bg-danger">Status: Belum Bayar</span>
@@ -25,20 +51,33 @@
     <div id="kasir-list" class="row g-4"></div>
 </div>
 
-<div id="print-area" class="d-none" style="width: 300px; font-family: monospace; padding: 20px;">
-    <center><h5>SABAR COFFEE</h5><p>Sidoarjo</p><hr></center>
-    <div id="struk-content"></div>
-    <hr><center><p>Terima Kasih!</p></center>
+<div id="print-area">
+    <div class="receipt-header">
+        <h4 style="margin:0;">SABAR COFFEE</h4>
+        <p style="font-size: 12px; margin:0;">Sidoarjo, Jawa Timur</p>
+        <p style="font-size: 10px;" id="receipt-date"></p>
+    </div>
+    <div id="struk-content" style="font-size: 13px;"></div>
+    <div class="receipt-footer">
+        <p style="font-size: 12px; margin:0;">Terima Kasih Atas Kunjungannya</p>
+        <p style="font-size: 10px; font-style: italic;">"Sabar itu Kopi, Nikmat itu Pasti"</p>
+    </div>
 </div>
 
 <script>
     const apiBaseUrl = "https://sakurasao-coffebreakapi.hf.space";
+
     async function loadUnpaid() {
         const res = await fetch(`${apiBaseUrl}/admin/transactions`);
         const data = await res.json();
         const list = document.getElementById('kasir-list');
         const unpaid = data.filter(o => o.status === 'Unpaid');
-        if(unpaid.length === 0) { list.innerHTML = '<div class="text-center py-5 text-muted"><h5>Semua pesanan sudah lunas.</h5></div>'; return; }
+        
+        if(unpaid.length === 0) { 
+            list.innerHTML = '<div class="text-center py-5 text-muted"><h5>Semua pesanan sudah lunas.</h5></div>'; 
+            return; 
+        }
+
         list.innerHTML = unpaid.map(order => `
             <div class="col-md-4">
                 <div class="card card-kasir h-100">
@@ -47,7 +86,7 @@
                             <span class="badge bg-dark">#${order.queue_number}</span>
                             <span class="price-total">Rp ${order.total_price.toLocaleString()}</span>
                         </div>
-                        <div class="item-list mb-3 text-start">
+                        <div class="text-start mb-3" style="font-size: 0.9rem; border-top: 1px dashed #ddd; padding-top: 10px;">
                             ${order.order_items.map(it => `
                                 <div class="d-flex justify-content-between">
                                     <span>${it.quantity}x ${it.products.name}</span>
@@ -56,20 +95,61 @@
                         </div>
                         <button class="btn btn-success w-100 fw-bold mb-2" onclick="pay(${order.id}, '${order.queue_number}')">LUNASKAN</button>
                         <div class="d-flex gap-2">
-                            <button class="btn btn-outline-dark btn-sm w-50" onclick="printReceipt(${JSON.stringify(order).replace(/"/g, '&quot;')})"><i class="bi bi-printer"></i> Struk</button>
-                            <button class="btn btn-outline-danger btn-sm w-50" onclick="cancel(${order.id})"><i class="bi bi-trash"></i> Batal</button>
+                            <button class="btn btn-outline-dark btn-sm w-50" onclick="printReceipt(${JSON.stringify(order).replace(/"/g, '&quot;')})">
+                                <i class="bi bi-printer"></i> Struk
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm w-50" onclick="cancel(${order.id})">
+                                <i class="bi bi-trash"></i> Batal
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>`).join('');
     }
-    async function pay(id, q) { if(confirm(`Konfirmasi pembayaran antrean ${q}?`)) { await fetch(`${apiBaseUrl}/admin/confirm-payment/${id}`, {method:'PATCH'}); loadUnpaid(); } }
-    async function cancel(id) { if(confirm("Hapus pesanan dan kembalikan stok?")) { await fetch(`${apiBaseUrl}/admin/cancel-order/${id}`, {method:'DELETE'}); loadUnpaid(); } }
+
+    async function pay(id, q) { 
+        if(confirm(`Konfirmasi pembayaran antrean ${q}?`)) { 
+            await fetch(`${apiBaseUrl}/admin/confirm-payment/${id}`, {method:'PATCH'}); 
+            loadUnpaid(); 
+        } 
+    }
+
+    async function cancel(id) { 
+        if(confirm("Hapus pesanan dan kembalikan stok?")) { 
+            await fetch(`${apiBaseUrl}/admin/cancel-order/${id}`, {method:'DELETE'}); 
+            loadUnpaid(); 
+        } 
+    }
+
     function printReceipt(o) {
-        document.getElementById('struk-content').innerHTML = `<p>Antrean: ${o.queue_number}</p><hr>${o.order_items.map(it=>`<div style="display:flex;justify-content:space-between"><span>${it.quantity}x ${it.products.name}</span><span>${(it.quantity*it.price_at_purchase).toLocaleString()}</span></div>`).join('')}<hr><div style="display:flex;justify-content:space-between"><b>TOTAL</b><b>Rp ${o.total_price.toLocaleString()}</b></div>`;
+        const dateStr = new Date(o.created_at).toLocaleString('id-ID');
+        document.getElementById('receipt-date').innerText = dateStr;
+        
+        let itemsHtml = `<p style="margin: 5px 0;">Antrean: <strong>${o.queue_number}</strong></p><div class="receipt-line"></div>`;
+        
+        o.order_items.forEach(it => {
+            itemsHtml += `
+                <div style="display:flex; justify-content:space-between; margin-bottom: 2px;">
+                    <span>${it.quantity}x ${it.products.name}</span>
+                    <span>${(it.quantity * it.price_at_purchase).toLocaleString()}</span>
+                </div>`;
+        });
+
+        itemsHtml += `
+            <div class="receipt-line"></div>
+            <div style="display:flex; justify-content:space-between; font-weight:bold; font-size: 15px;">
+                <span>TOTAL</span>
+                <span>Rp ${o.total_price.toLocaleString()}</span>
+            </div>`;
+
+        document.getElementById('struk-content').innerHTML = itemsHtml;
+        
+        // Triger print browser
         window.print();
     }
-    setInterval(loadUnpaid, 5000); loadUnpaid();
+
+    setInterval(loadUnpaid, 5000); 
+    loadUnpaid();
 </script>
 </body>
 </html>
