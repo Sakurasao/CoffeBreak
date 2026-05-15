@@ -12,7 +12,8 @@
     
     <style>
         :root { --brand: #c85a2e; }
-        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; padding-top: 90px; }
+        .navbar { background-color: var(--brand) !important; border-bottom: 2px solid rgba(0,0,0,0.1); padding: 12px 0; }
         
         /* Gaya Kartu Barista Lama */
         .barista-card { 
@@ -73,7 +74,18 @@
     </style>
 </head>
 <body>
-
+<nav class="navbar navbar-dark fixed-top shadow-sm">
+    <div class="container-fluid px-4 d-flex justify-content-between align-items-center">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <img src="../Asset/logo.jpeg" alt="Logo" width="40" height="40" class="rounded-circle me-3 border border-white">
+            <span>SABAR COFFEE <small class="fw-light ms-2 text-white-50">| Barista Station</small></span>
+        </a>
+        <div class="text-white text-end">
+            <div id="status-badge" class="badge bg-white text-dark small mb-1">System Active</div>
+            <div class="small text-white-50" id="last-sync">Sync: -</div>
+        </div>
+    </div>
+</nav>
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>

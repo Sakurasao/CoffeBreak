@@ -13,7 +13,15 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        :root { --brand: #c85a2e; --bg: #f8f9fa; }
+        :root { --brand: #c85a2e; }
+        .sidebar-brand { 
+            background: var(--brand); /* Diubah jadi cokelat brand */
+            color: #fff; 
+            padding: 25px 20px; 
+            text-align: center;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        .sidebar-brand img { border: 2px solid #fff; }
         body { background-color: var(--bg); font-family: 'Segoe UI', sans-serif; }
         .sidebar { background: #fff; min-height: 100vh; border-right: 1px solid #ddd; }
         .nav-link { color: #333; padding: 15px; border-radius: 10px; margin-bottom: 5px; transition: 0.3s; }
@@ -29,6 +37,11 @@
 
 <div class="container-fluid">
     <div class="row">
+        <div class="sidebar-brand">
+            <img src="../Asset/logo.jpeg" alt="Logo" width="60" height="60" class="rounded-circle mb-2 shadow">
+            <h5 class="fw-bold m-0">SABAR COFFEE</h5>
+            <small class="text-white-50">Administrator Mode</small>
+        </div>
         <div class="col-md-2 sidebar p-3 d-none d-md-block">
             <div class="text-center mb-4">
                 <img src="../Asset/logo.jpeg" alt="Logo" width="60" class="rounded-circle mb-2">
