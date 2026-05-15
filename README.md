@@ -42,20 +42,7 @@
 * **Frontend:** HTML5, CSS3 (Bootstrap 5.3), Vanilla JavaScript.
 * **Icons:** Bootstrap Icons.
 * **Charts:** Chart.js.
-* **Backend API:** `sakurasao-coffebreakapi.hf.space`
-
----
-
-## 🛠️ Installation & Usage / Cara Penggunaan
-**EN:** Since this project uses Vanilla Web technology, no installation is required. Simply:
-1. Clone this repository.
-2. Open `index.html` using **Live Server** (recommended) in your browser.
-3. Access other stations via their respective files (e.g., `kasir.html`).
-
-**ID:** Karena proyek ini menggunakan teknologi Vanilla Web, tidak diperlukan instalasi rumit. Cukup:
-1. Clone repositori ini.
-2. Buka `index.html` menggunakan **Live Server** (disarankan) di browser Anda.
-3. Akses stasiun lain melalui file masing-masing (contoh: `kasir.html`).
+* **Backend API:** `own web-service`
 
 ---
 
