@@ -94,7 +94,7 @@ app.add_middleware(
 security = HTTPBearer()
 
 # Token statis sementara (bisa diganti password yang lebih rumit)
-SECRET_ADMIN_TOKEN = "rahasia-kopi-sabar-123"
+SECRET_ADMIN_TOKEN = "[put your own]"
 
 def verify_admin_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     if credentials.credentials != SECRET_ADMIN_TOKEN:
@@ -132,6 +132,7 @@ class OrderPayload(BaseModel):
     items: List[OrderItem]
     total: float
 ```
+</details>
 
 ---
 
