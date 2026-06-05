@@ -90,10 +90,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- KONFIGURASI KEAMANAN FASTAPI (UNTUK ADMIN) ---
 security = HTTPBearer()
 
-# Token statis sementara (bisa diganti password yang lebih rumit)
 SECRET_ADMIN_TOKEN = "[put your own]"
 
 def verify_admin_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
@@ -105,7 +103,6 @@ def verify_admin_token(credentials: HTTPAuthorizationCredentials = Depends(secur
         )
     return credentials.credentials
 
-# --- KONFIGURASI SUPABASE ---
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 HEADERS = {
@@ -115,10 +112,8 @@ HEADERS = {
     "Prefer": "return=representation"
 }
 
-# Zona Waktu Indonesia Barat
 WIB = timezone(timedelta(hours=7))
 
-# --- MODEL DATA ---
 class StockUpdate(BaseModel):
     stock: int
 
