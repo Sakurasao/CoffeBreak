@@ -1,201 +1,350 @@
 <!doctype html>
 <html lang="id">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Admin Dashboard - Sabar Coffee</title>
-    <link rel="icon" type="image/x-icon" href="../Asset/favicon.ico">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="icon" type="image/x-icon" href="../Asset/favicon.ico" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css"
+    />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root {
-            --brand-primary: #c85a2e;
-            --brand-dark: #8e3f1a;
-            --brand-bg: #fbf6eb;
-            --brand-muted: #eadfcf;
-        }
-        body { 
-            background-color: var(--brand-bg); 
-            font-family: "Segoe UI", Roboto, sans-serif; 
-            color: #333;
-            overflow: hidden; 
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .navbar { 
-            background-color: var(--brand-primary) !important; 
-            height: 75px;
-            z-index: 1030;
-            flex-shrink: 0;
-            border-bottom: 3px solid rgba(0,0,0,0.1);
-        }
-        .navbar-brand { font-weight: 800; letter-spacing: 1px; color: #fff !important; }
-        .admin-wrapper { display: flex; flex: 1; overflow: hidden; }
-        .sidebar { 
-            width: 260px;
-            background: #fff;
-            border-right: 1px solid #eee;
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-        }
-        .sidebar-brand { background: var(--brand-primary); padding: 25px 20px; text-align: center; color: #fff; }
-        .sidebar .nav-link { 
-            color: #555; 
-            padding: 12px 20px; 
-            border-radius: 50px; 
-            margin: 5px 15px;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-        .sidebar .nav-link:hover { background: var(--brand-bg); color: var(--brand-primary); }
-        .sidebar .nav-link.active { background: var(--brand-primary) !important; color: #fff !important; }
-        .main-content { flex: 1; overflow-y: auto; padding: 30px; background-color: var(--brand-bg); }
-        .day-group-card {
-            border: none;
-            border-radius: 20px;
-            background: #fff;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            overflow: hidden;
-        }
-        .day-header {
-            padding: 20px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #fff;
-            transition: 0.2s;
-        }
-        .day-header:hover { background: #fafafa; }
-        .day-header.active { background: #fff5f2; border-bottom: 1px solid #eee; }
-        .day-title { font-weight: 800; color: #333; margin: 0; font-size: 1.1rem; }
-        .day-total { font-weight: 800; color: var(--brand-primary); font-size: 1.1rem; }
-        .table-detail { padding: 0 20px 20px 20px; }
-        .table thead th { border-top: none; background: #fafafa; font-size: 0.8rem; color: #888; text-transform: uppercase; }
-        .card-stock { border: none; border-radius: 20px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .btn-brand { background-color: var(--brand-primary); color: #fff; border: none; border-radius: 50px; transition: 0.3s; }
-        .btn-brand:hover { background-color: var(--brand-dark); color: #fff; }
+      :root {
+        --brand-primary: #c85a2e;
+        --brand-dark: #8e3f1a;
+        --brand-bg: #fbf6eb;
+        --brand-muted: #eadfcf;
+      }
+      body {
+        background-color: var(--brand-bg);
+        font-family: "Segoe UI", Roboto, sans-serif;
+        color: #333;
+        overflow: hidden;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .navbar {
+        background-color: var(--brand-primary) !important;
+        height: 75px;
+        z-index: 1030;
+        flex-shrink: 0;
+        border-bottom: 3px solid rgba(0, 0, 0, 0.1);
+      }
+      .navbar-brand {
+        font-weight: 800;
+        letter-spacing: 1px;
+        color: #fff !important;
+      }
+      .admin-wrapper {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+      }
+      .sidebar {
+        width: 260px;
+        background: #fff;
+        border-right: 1px solid #eee;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+      }
+      .sidebar-brand {
+        background: var(--brand-primary);
+        padding: 25px 20px;
+        text-align: center;
+        color: #fff;
+      }
+      .sidebar .nav-link {
+        color: #555;
+        padding: 12px 20px;
+        border-radius: 50px;
+        margin: 5px 15px;
+        font-weight: 600;
+        transition: 0.3s;
+      }
+      .sidebar .nav-link:hover {
+        background: var(--brand-bg);
+        color: var(--brand-primary);
+      }
+      .sidebar .nav-link.active {
+        background: var(--brand-primary) !important;
+        color: #fff !important;
+      }
+      .main-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 30px;
+        background-color: var(--brand-bg);
+      }
+      .day-group-card {
+        border: none;
+        border-radius: 20px;
+        background: #fff;
+        margin-bottom: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+      }
+      .day-header {
+        padding: 20px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fff;
+        transition: 0.2s;
+      }
+      .day-header:hover {
+        background: #fafafa;
+      }
+      .day-header.active {
+        background: #fff5f2;
+        border-bottom: 1px solid #eee;
+      }
+      .day-title {
+        font-weight: 800;
+        color: #333;
+        margin: 0;
+        font-size: 1.1rem;
+      }
+      .day-total {
+        font-weight: 800;
+        color: var(--brand-primary);
+        font-size: 1.1rem;
+      }
+      .table-detail {
+        padding: 0 20px 20px 20px;
+      }
+      .table thead th {
+        border-top: none;
+        background: #fafafa;
+        font-size: 0.8rem;
+        color: #888;
+        text-transform: uppercase;
+      }
+      .card-stock {
+        border: none;
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+      .btn-brand {
+        background-color: var(--brand-primary);
+        color: #fff;
+        border: none;
+        border-radius: 50px;
+        transition: 0.3s;
+      }
+      .btn-brand:hover {
+        background-color: var(--brand-dark);
+        color: #fff;
+      }
     </style>
-</head>
-<body>
-
-<nav class="navbar navbar-dark shadow-sm">
-    <div class="container-fluid px-4 d-flex justify-content-between align-items-center">
+  </head>
+  <body>
+    <nav class="navbar navbar-dark shadow-sm">
+      <div
+        class="container-fluid px-4 d-flex justify-content-between align-items-center"
+      >
         <a class="navbar-brand d-flex align-items-center" href="#">
-            <img src="../Asset/logo.jpeg" alt="" width="45" height="45" class="me-3" style="border-radius: 50%; border: 2px solid rgba(255,255,255,0.8);">
-            SABAR COFFEE <small class="fw-light ms-2 text-white-50">| Management Dashboard</small>
+          <img
+            src="../Asset/logo.jpeg"
+            alt=""
+            width="45"
+            height="45"
+            class="me-3"
+            style="
+              border-radius: 50%;
+              border: 2px solid rgba(255, 255, 255, 0.8);
+            "
+          />
+          SABAR COFFEE
+          <small class="fw-light ms-2 text-white-50"
+            >| Management Dashboard</small
+          >
         </a>
         <div class="text-white text-end">
-            <div class="fw-bold fs-5" id="clock">00:00:00</div>
-            <div class="small text-white-50">Admin Online <span id="sync-indicator" class="text-success ms-1">●</span></div>
+          <div class="fw-bold fs-5" id="clock">00:00:00</div>
+          <div class="small text-white-50">
+            Admin Online
+            <span id="sync-indicator" class="text-success ms-1">●</span>
+          </div>
         </div>
-    </div>
-</nav>
+      </div>
+    </nav>
 
-<div class="admin-wrapper">
-    <div class="sidebar">
+    <div class="admin-wrapper">
+      <div class="sidebar">
         <div class="sidebar-brand">
-            <img src="../Asset/logo.jpeg" alt="" width="70" height="70" class="mb-3 shadow" style="border-radius: 50%; border: 3px solid #fff;">
-            <h6 class="m-0 fw-bold">ADMIN PANEL</h6>
+          <img
+            src="../Asset/logo.jpeg"
+            alt=""
+            width="70"
+            height="70"
+            class="mb-3 shadow"
+            style="border-radius: 50%; border: 3px solid #fff"
+          />
+          <h6 class="m-0 fw-bold">ADMIN PANEL</h6>
         </div>
         <div class="nav flex-column nav-pills mt-4">
-            <button class="nav-link active" id="tab-transactions" data-bs-toggle="pill" data-bs-target="#content-transactions">
-                <i class="bi bi-clock-history me-2"></i> Riwayat Transaksi
-            </button>
-            <button class="nav-link" id="tab-stock" data-bs-toggle="pill" data-bs-target="#content-stock">
-                <i class="bi bi-boxes me-2"></i> Manajemen Stok
-            </button>
-            <button class="nav-link" id="tab-report" data-bs-toggle="pill" data-bs-target="#content-report">
-                <i class="bi bi-graph-up-arrow me-2"></i> Laporan Penjualan
-            </button>
+          <button
+            class="nav-link active"
+            id="tab-transactions"
+            data-bs-toggle="pill"
+            data-bs-target="#content-transactions"
+          >
+            <i class="bi bi-clock-history me-2"></i> Riwayat Transaksi
+          </button>
+          <button
+            class="nav-link"
+            id="tab-stock"
+            data-bs-toggle="pill"
+            data-bs-target="#content-stock"
+          >
+            <i class="bi bi-boxes me-2"></i> Manajemen Stok
+          </button>
+          <button
+            class="nav-link"
+            id="tab-report"
+            data-bs-toggle="pill"
+            data-bs-target="#content-report"
+          >
+            <i class="bi bi-graph-up-arrow me-2"></i> Laporan Penjualan
+          </button>
         </div>
+      </div>
+
+      <main class="main-content">
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="content-transactions">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h3 class="fw-bold m-0 text-dark">Riwayat Transaksi</h3>
+              <button
+                class="btn btn-brand btn-sm px-4"
+                onclick="forceRefresh()"
+              >
+                <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+              </button>
+            </div>
+            <div id="transaction-groups"></div>
+          </div>
+
+          <div class="tab-pane fade" id="content-stock">
+            <h3 class="fw-bold mb-4">Stok & Menu</h3>
+            <div id="stock-list" class="row g-4"></div>
+          </div>
+
+          <div class="tab-pane fade" id="content-report">
+            <h3 class="fw-bold mb-4">Laporan Penjualan</h3>
+            <div class="row g-4 mb-4">
+              <div class="col-md-6">
+                <div
+                  class="card-stock p-4 text-center border-top border-brand border-4"
+                >
+                  <span class="text-muted small"
+                    >Total Pendapatan (Bulan Ini)</span
+                  >
+                  <h1 class="fw-bold text-brand mt-2" id="stat-total-revenue">
+                    Rp 0
+                  </h1>
+                </div>
+              </div>
+            </div>
+            <div class="card-stock p-4">
+              <div style="height: 350px"><canvas id="salesChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
 
-    <main class="main-content">
-        <div class="tab-content">
-            <div class="tab-pane fade show active" id="content-transactions">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="fw-bold m-0 text-dark">Riwayat Transaksi</h3>
-                    <button class="btn btn-brand btn-sm px-4" onclick="forceRefresh()">
-                        <i class="bi bi-arrow-clockwise me-1"></i> Refresh
-                    </button>
-                </div>
-                <div id="transaction-groups"></div>
-            </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const originalFetch = window.fetch;
+      window.fetch = async function () {
+        let [resource, config] = arguments;
 
-            <div class="tab-pane fade" id="content-stock">
-                <h3 class="fw-bold mb-4">Stok & Menu</h3>
-                <div id="stock-list" class="row g-4"></div>
-            </div>
+        // Jika ada request dari frontend yang mengarah ke endpoint /admin/
+        if (typeof resource === "string" && resource.includes("/admin/")) {
+          config = config || {};
+          config.headers = config.headers || {};
 
-            <div class="tab-pane fade" id="content-report">
-                <h3 class="fw-bold mb-4">Laporan Penjualan</h3>
-                <div class="row g-4 mb-4">
-                    <div class="col-md-6">
-                        <div class="card-stock p-4 text-center border-top border-brand border-4">
-                            <span class="text-muted small">Total Pendapatan (Bulan Ini)</span>
-                            <h1 class="fw-bold text-brand mt-2" id="stat-total-revenue">Rp 0</h1>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-stock p-4">
-                    <div style="height: 350px;"><canvas id="salesChart"></canvas></div>
-                </div>
-            </div>
-        </div>
-    </main>
-</div>
+          // Otomatis selipkan kunci/token rahasia di sini!
+          config.headers["Authorization"] = "Bearer rahasia-kopi-sabar-123";
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    const apiBaseUrl = "https://sakurasao-coffebreakapi.hf.space";
-    let myChart = null;
-    let lastTxData = "";
-    let lastStockData = "";
-    let lastReportData = "";
+          // Pastikan format JSON aman
+          if (
+            !config.headers["Content-Type"] &&
+            (config.method === "POST" || config.method === "PATCH")
+          ) {
+            config.headers["Content-Type"] = "application/json";
+          }
+        }
 
-    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID'); }, 1000);
+        return originalFetch(resource, config);
+      };
 
-    function forceRefresh() {
+      const apiBaseUrl = "https://sakurasao-coffebreakapi.hf.space";
+      let myChart = null;
+      let lastTxData = "";
+      let lastStockData = "";
+      let lastReportData = "";
+
+      setInterval(() => {
+        document.getElementById("clock").innerText =
+          new Date().toLocaleTimeString("id-ID");
+      }, 1000);
+
+      function forceRefresh() {
         lastTxData = "";
         lastStockData = "";
         lastReportData = "";
         syncData();
-    }
+      }
 
-    async function loadTransactions() {
+      async function loadTransactions() {
         try {
-            const res = await fetch(`${apiBaseUrl}/admin/transactions`);
-            const data = await res.json();
-            const dataStr = JSON.stringify(data);
-            if(dataStr === lastTxData) return;
-            lastTxData = dataStr;
+          const res = await fetch(`${apiBaseUrl}/admin/transactions`);
+          const data = await res.json();
+          const dataStr = JSON.stringify(data);
+          if (dataStr === lastTxData) return;
+          lastTxData = dataStr;
 
-            const container = document.getElementById("transaction-groups");
-            const groups = {};
-            data.forEach(order => {
-                const dateKey = new Date(order.created_at).toISOString().split('T')[0];
-                if (!groups[dateKey]) groups[dateKey] = { items: [], totalDay: 0 };
-                groups[dateKey].items.push(order);
-                groups[dateKey].totalDay += order.total_price;
-            });
-            const sortedDates = Object.keys(groups).sort((a, b) => new Date(b) - new Date(a));
-            if (sortedDates.length === 0) {
-                container.innerHTML = `<p class="text-center py-5 text-muted">Belum ada riwayat transaksi.</p>`;
-                return;
-            }
-            container.innerHTML = sortedDates.map((date, idx) => {
-                const dayData = groups[date];
-                const displayDate = new Date(date).toLocaleDateString('id-ID', { 
-                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
-                });
-                return `
+          const container = document.getElementById("transaction-groups");
+          const groups = {};
+          data.forEach((order) => {
+            const dateKey = new Date(order.created_at)
+              .toISOString()
+              .split("T")[0];
+            if (!groups[dateKey]) groups[dateKey] = { items: [], totalDay: 0 };
+            groups[dateKey].items.push(order);
+            groups[dateKey].totalDay += order.total_price;
+          });
+          const sortedDates = Object.keys(groups).sort(
+            (a, b) => new Date(b) - new Date(a),
+          );
+          if (sortedDates.length === 0) {
+            container.innerHTML = `<p class="text-center py-5 text-muted">Belum ada riwayat transaksi.</p>`;
+            return;
+          }
+          container.innerHTML = sortedDates
+            .map((date, idx) => {
+              const dayData = groups[date];
+              const displayDate = new Date(date).toLocaleDateString("id-ID", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              });
+              return `
                 <div class="day-group-card">
-                    <div class="day-header ${idx === 0 ? 'active' : ''}" data-bs-toggle="collapse" data-bs-target="#day-${idx}">
+                    <div class="day-header ${idx === 0 ? "active" : ""}" data-bs-toggle="collapse" data-bs-target="#day-${idx}">
                         <div>
                             <p class="day-title">${displayDate}</p>
                             <small class="text-muted">${dayData.items.length} Transaksi</small>
@@ -205,7 +354,7 @@
                             <i class="bi bi-chevron-down ms-3"></i>
                         </div>
                     </div>
-                    <div id="day-${idx}" class="collapse ${idx === 0 ? 'show' : ''}">
+                    <div id="day-${idx}" class="collapse ${idx === 0 ? "show" : ""}">
                         <div class="table-detail">
                             <div class="table-responsive">
                                 <table class="table table-hover mt-3">
@@ -219,41 +368,48 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        ${dayData.items.map(o => `
+                                        ${dayData.items
+                                          .map(
+                                            (o) => `
                                             <tr>
                                                 <td class="fw-bold">#${o.queue_number}</td>
-                                                <td>${new Date(o.created_at).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}</td>
-                                                <td><small class="text-muted">${o.order_items.map(it => `${it.quantity}x ${it.products.name}`).join(', ')}</small></td>
-                                                <td><span class="badge rounded-pill bg-${o.status==='Completed'?'success':(o.status==='Pending'?'warning':'secondary')}">${o.status}</span></td>
+                                                <td>${new Date(o.created_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}</td>
+                                                <td><small class="text-muted">${o.order_items.map((it) => `${it.quantity}x ${it.products.name}`).join(", ")}</small></td>
+                                                <td><span class="badge rounded-pill bg-${o.status === "Completed" ? "success" : o.status === "Pending" ? "warning" : "secondary"}">${o.status}</span></td>
                                                 <td class="text-end fw-bold">Rp ${o.total_price.toLocaleString()}</td>
                                             </tr>
-                                        `).join('')}
+                                        `,
+                                          )
+                                          .join("")}
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>`;
-            }).join('');
-        } catch(e) {}
-    }
+            })
+            .join("");
+        } catch (e) {}
+      }
 
-    async function loadStock() {
+      async function loadStock() {
         try {
-            const res = await fetch(`${apiBaseUrl}/menu`);
-            const data = await res.json();
-            const dataStr = JSON.stringify(data);
-            if(dataStr === lastStockData) return;
-            lastStockData = dataStr;
+          const res = await fetch(`${apiBaseUrl}/menu`);
+          const data = await res.json();
+          const dataStr = JSON.stringify(data);
+          if (dataStr === lastStockData) return;
+          lastStockData = dataStr;
 
-            const list = document.getElementById("stock-list");
-            list.innerHTML = data.map(p => `
+          const list = document.getElementById("stock-list");
+          list.innerHTML = data
+            .map(
+              (p) => `
                 <div class="col-md-4">
                     <div class="card-stock p-4 h-100">
                         <h6 class="fw-bold mb-1">${p.name}</h6>
                         <p class="text-muted small mb-3">${p.category}</p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="badge ${p.stock > 0 ? 'bg-success' : 'bg-danger'} rounded-pill">Stok: ${p.stock}</span>
+                            <span class="badge ${p.stock > 0 ? "bg-success" : "bg-danger"} rounded-pill">Stok: ${p.stock}</span>
                             <div class="input-group input-group-sm w-50">
                                 <input type="number" class="form-control" id="add-${p.id}" placeholder="+/-">
                                 <button class="btn btn-brand text-white" onclick="updateStock(${p.id})">OK</button>
@@ -261,68 +417,85 @@
                         </div>
                     </div>
                 </div>
-            `).join('');
-        } catch(e) {}
-    }
+            `,
+            )
+            .join("");
+        } catch (e) {}
+      }
 
-    async function updateStock(id) {
+      async function updateStock(id) {
         const val = document.getElementById(`add-${id}`).value;
-        if(!val) return;
+        if (!val) return;
         await fetch(`${apiBaseUrl}/admin/update-stock/${id}`, {
-            method: 'PATCH',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({stock: parseInt(val)})
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ stock: parseInt(val) }),
         });
         lastStockData = "";
         loadStock();
-    }
+      }
 
-    async function loadSalesReport() {
+      async function loadSalesReport() {
         try {
-            const res = await fetch(`${apiBaseUrl}/admin/sales-report`);
-            const result = await res.json();
-            const dataStr = JSON.stringify(result);
-            if(dataStr === lastReportData) return;
-            lastReportData = dataStr;
+          const res = await fetch(`${apiBaseUrl}/admin/sales-report`);
+          const result = await res.json();
+          const dataStr = JSON.stringify(result);
+          if (dataStr === lastReportData) return;
+          lastReportData = dataStr;
 
-            document.getElementById("stat-total-revenue").innerText = `Rp ${result.total_period.toLocaleString()}`;
-            const ctx = document.getElementById("salesChart").getContext("2d");
-            if (myChart) myChart.destroy();
-            myChart = new Chart(ctx, {
-                type: "line",
-                data: {
-                    labels: result.labels,
-                    datasets: [{
-                        label: "Revenue",
-                        data: result.data,
-                        borderColor: "#c85a2e",
-                        backgroundColor: "rgba(200, 90, 46, 0.1)",
-                        fill: true, tension: 0.4, borderWidth: 3
-                    }]
+          document.getElementById("stat-total-revenue").innerText =
+            `Rp ${result.total_period.toLocaleString()}`;
+          const ctx = document.getElementById("salesChart").getContext("2d");
+          if (myChart) myChart.destroy();
+          myChart = new Chart(ctx, {
+            type: "line",
+            data: {
+              labels: result.labels,
+              datasets: [
+                {
+                  label: "Revenue",
+                  data: result.data,
+                  borderColor: "#c85a2e",
+                  backgroundColor: "rgba(200, 90, 46, 0.1)",
+                  fill: true,
+                  tension: 0.4,
+                  borderWidth: 3,
                 },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-        } catch(e) {}
-    }
+              ],
+            },
+            options: { responsive: true, maintainAspectRatio: false },
+          });
+        } catch (e) {}
+      }
 
-    function syncData() {
-        const activeTab = document.querySelector('.nav-link.active').id;
-        const ind = document.getElementById('sync-indicator');
-        ind.style.opacity = '1';
-        
-        if (activeTab === 'tab-transactions') loadTransactions();
-        else if (activeTab === 'tab-stock') loadStock();
-        else if (activeTab === 'tab-report') loadSalesReport();
-        
-        setTimeout(() => { ind.style.opacity = '0.3'; }, 500);
-    }
+      function syncData() {
+        const activeTab = document.querySelector(".nav-link.active").id;
+        const ind = document.getElementById("sync-indicator");
+        ind.style.opacity = "1";
 
-    document.getElementById("tab-transactions").addEventListener("click", () => { setTimeout(syncData, 100); });
-    document.getElementById("tab-stock").addEventListener("click", () => { setTimeout(syncData, 100); });
-    document.getElementById("tab-report").addEventListener("click", () => { setTimeout(syncData, 100); });
-    
-    syncData();
-    setInterval(syncData, 2000);
-</script>
-</body>
+        if (activeTab === "tab-transactions") loadTransactions();
+        else if (activeTab === "tab-stock") loadStock();
+        else if (activeTab === "tab-report") loadSalesReport();
+
+        setTimeout(() => {
+          ind.style.opacity = "0.3";
+        }, 500);
+      }
+
+      document
+        .getElementById("tab-transactions")
+        .addEventListener("click", () => {
+          setTimeout(syncData, 100);
+        });
+      document.getElementById("tab-stock").addEventListener("click", () => {
+        setTimeout(syncData, 100);
+      });
+      document.getElementById("tab-report").addEventListener("click", () => {
+        setTimeout(syncData, 100);
+      });
+
+      syncData();
+      setInterval(syncData, 2000);
+    </script>
+  </body>
 </html>
