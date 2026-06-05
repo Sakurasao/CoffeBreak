@@ -1,4 +1,4 @@
-*Note: to open other add /admin and /target, example /admin/kasir
+> *Note: to open other add /admin and /target, example /admin/kasir
 
 # ☕ Sabar Coffee - Digital POS & Order System
 > **ID:** Proyek pembelajaran sistem kasir dan pemesanan digital untuk kedai kopi lokal.  
@@ -54,4 +54,85 @@
 * **Vibe:** Clean, Rounded (20px), and User Friendly.
 
 ---
+
+> Api Source Screenshot
+<img width="1364" height="328" alt="Screenshot 2026-06-05 164035" src="https://github.com/user-attachments/assets/b0b6b963-7fb3-46b0-b8ee-2d637ee19070" />
+
+---
+
+### Dokumentasi API & Security
+
+Berikut adalah cuplikan kode konfigurasi FastAPI dan keamanan (Authorization) yang digunakan dalam sistem ini:
+
+<details>
+<summary><b>Klik untuk melihat kode lengkap</b></summary>
+
+```python
+from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import requests
+import os
+import json
+from pydantic import BaseModel
+from typing import List, Optional
+from datetime import datetime, timedelta, timezone
+from dotenv import load_dotenv
+
+load_dotenv()
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# --- KONFIGURASI KEAMANAN FASTAPI (UNTUK ADMIN) ---
+security = HTTPBearer()
+
+# Token statis sementara (bisa diganti password yang lebih rumit)
+SECRET_ADMIN_TOKEN = "rahasia-kopi-sabar-123"
+
+def verify_admin_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    if credentials.credentials != SECRET_ADMIN_TOKEN:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token tidak valid atau Anda tidak memiliki akses",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return credentials.credentials
+
+# --- KONFIGURASI SUPABASE ---
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+HEADERS = {
+    "apikey": SUPABASE_KEY,
+    "Authorization": f"Bearer {SUPABASE_KEY}",
+    "Content-Type": "application/json",
+    "Prefer": "return=representation"
+}
+
+# Zona Waktu Indonesia Barat
+WIB = timezone(timedelta(hours=7))
+
+# --- MODEL DATA ---
+class StockUpdate(BaseModel):
+    stock: int
+
+class OrderItem(BaseModel):
+    id: int
+    qty: int
+    price: float
+
+class OrderPayload(BaseModel):
+    queue: str
+    items: List[OrderItem]
+    total: float
+```
+
+---
+
 **👨‍💻 Developed by Fadhlullah Hanif Nur Caturangga** *Sidoarjo, Indonesia - 2026*
