@@ -1,3 +1,5 @@
+*Note: to open other add /admin and /target, example /admin/kasir
+
 # ☕ Sabar Coffee - Digital POS & Order System
 > **ID:** Proyek pembelajaran sistem kasir dan pemesanan digital untuk kedai kopi lokal.  
 > **EN:** A learning project for a digital POS and ordering system tailored for local coffee shops.
