@@ -138,25 +138,37 @@ async function updateStock(id) {
   loadStock();
 }
 
-async function loadSalesReport() {
+async function loadSalesReport(force = false) {
   try {
     const res = await fetch(`${apiBaseUrl}/admin/sales-report`);
     const result = await res.json();
     const dataStr = JSON.stringify(result);
-    if (dataStr === lastReportData) return;
+    if (!force && dataStr === lastReportData) {
+      if (myChart) {
+        requestAnimationFrame(() => myChart.resize());
+      }
+      return;
+    }
     lastReportData = dataStr;
 
-    document.getElementById("stat-total-revenue").innerText = `Rp ${result.total_period.toLocaleString()}`;
-    const ctx = document.getElementById("salesChart").getContext("2d");
-    if (myChart) myChart.destroy();
+    const chartCanvas = document.getElementById("salesChart");
+    if (!chartCanvas) return;
+
+    document.getElementById("stat-total-revenue").innerText = `Rp ${Number(result.total_period || 0).toLocaleString()}`;
+    const ctx = chartCanvas.getContext("2d");
+    if (myChart) {
+      myChart.destroy();
+      myChart = null;
+    }
+
     myChart = new Chart(ctx, {
       type: "line",
       data: {
-        labels: result.labels,
+        labels: result.labels || [],
         datasets: [
           {
             label: "Revenue",
-            data: result.data,
+            data: result.data || [],
             borderColor: "#c85a2e",
             backgroundColor: "rgba(200, 90, 46, 0.1)",
             fill: true,
@@ -167,6 +179,13 @@ async function loadSalesReport() {
       },
       options: { responsive: true, maintainAspectRatio: false },
     });
+
+    requestAnimationFrame(() => {
+      if (myChart) myChart.resize();
+    });
+    setTimeout(() => {
+      if (myChart) myChart.resize();
+    }, 150);
   } catch (e) {}
 }
 
@@ -177,7 +196,7 @@ function syncData() {
 
   if (activeTab === "tab-transactions") loadTransactions();
   else if (activeTab === "tab-stock") loadStock();
-  else if (activeTab === "tab-report") loadSalesReport();
+  else if (activeTab === "tab-report") loadSalesReport(true);
 
   setTimeout(() => {
     ind.style.opacity = "0.3";
