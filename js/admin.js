@@ -3,6 +3,7 @@ let myChart = null;
 let lastTxData = "";
 let lastStockData = "";
 let lastReportData = "";
+let reportRange = 7;
 
 setInterval(() => {
   document.getElementById("clock").innerText = new Date().toLocaleTimeString("id-ID");
@@ -138,9 +139,14 @@ async function updateStock(id) {
   loadStock();
 }
 
-async function loadSalesReport(force = false) {
+async function loadSalesReport(force = false, range = reportRange) {
   try {
-    const res = await fetch(`${apiBaseUrl}/admin/sales-report`);
+    const url = new URL(`${apiBaseUrl}/admin/sales-report`);
+    url.searchParams.set("range", range);
+    const res = await fetch(url.toString());
+    if (!res.ok) {
+      throw new Error(`Laporan gagal dimuat: ${res.status} ${res.statusText}`);
+    }
     const result = await res.json();
     const dataStr = JSON.stringify(result);
     if (!force && dataStr === lastReportData) {
@@ -164,11 +170,11 @@ async function loadSalesReport(force = false) {
     myChart = new Chart(ctx, {
       type: "line",
       data: {
-        labels: result.labels || [],
+        labels: Array.isArray(result.labels) ? result.labels : [],
         datasets: [
           {
             label: "Revenue",
-            data: result.data || [],
+            data: Array.isArray(result.data) ? result.data : [],
             borderColor: "#c85a2e",
             backgroundColor: "rgba(200, 90, 46, 0.1)",
             fill: true,
@@ -186,11 +192,21 @@ async function loadSalesReport(force = false) {
     setTimeout(() => {
       if (myChart) myChart.resize();
     }, 150);
-  } catch (e) {}
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function getActiveTabId() {
+  const activeButton = document.querySelector(".nav-link.active");
+  if (activeButton) return activeButton.id;
+  if (window.location.hash === "#content-report") return "tab-report";
+  if (window.location.hash === "#content-stock") return "tab-stock";
+  return "tab-transactions";
 }
 
 function syncData() {
-  const activeTab = document.querySelector(".nav-link.active").id;
+  const activeTab = getActiveTabId();
   const ind = document.getElementById("sync-indicator");
   ind.style.opacity = "1";
 
@@ -203,14 +219,22 @@ function syncData() {
   }, 500);
 }
 
-document.getElementById("tab-transactions").addEventListener("click", () => {
-  setTimeout(syncData, 100);
+function setReportRange(range) {
+  reportRange = range;
+  document.querySelectorAll("#report-range-buttons button").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.range === String(range));
+  });
+  loadSalesReport(true, range);
+}
+
+const rangeButtons = document.querySelectorAll("#report-range-buttons button");
+rangeButtons.forEach((button) => {
+  button.addEventListener("click", () => setReportRange(button.dataset.range));
 });
-document.getElementById("tab-stock").addEventListener("click", () => {
-  setTimeout(syncData, 100);
-});
-document.getElementById("tab-report").addEventListener("click", () => {
-  setTimeout(syncData, 100);
+
+const tabButtons = document.querySelectorAll(".nav-link");
+tabButtons.forEach((button) => {
+  button.addEventListener("shown.bs.tab", syncData);
 });
 
 syncData();
