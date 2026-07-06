@@ -3,7 +3,6 @@ let myChart = null;
 let lastTxData = "";
 let lastStockData = "";
 let lastReportData = "";
-let reportRange = 7;
 
 setInterval(() => {
   document.getElementById("clock").innerText = new Date().toLocaleTimeString("id-ID");
@@ -139,11 +138,11 @@ async function updateStock(id) {
   loadStock();
 }
 
-async function loadSalesReport(force = false, range = reportRange) {
+async function loadSalesReport(force = false) {
   try {
     const now = new Date();
     const endDate = now.toISOString().slice(0, 10);
-    const startDate = new Date(now.getTime() - (range - 1) * 24 * 60 * 60 * 1000)
+    const startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000)
       .toISOString()
       .slice(0, 10);
 
@@ -225,19 +224,6 @@ function syncData() {
     ind.style.opacity = "0.3";
   }, 500);
 }
-
-function setReportRange(range) {
-  reportRange = range;
-  document.querySelectorAll("#report-range-buttons button").forEach((btn) => {
-    btn.classList.toggle("active", btn.dataset.range === String(range));
-  });
-  loadSalesReport(true, range);
-}
-
-const rangeButtons = document.querySelectorAll("#report-range-buttons button");
-rangeButtons.forEach((button) => {
-  button.addEventListener("click", () => setReportRange(button.dataset.range));
-});
 
 const tabButtons = document.querySelectorAll(".nav-link");
 tabButtons.forEach((button) => {
