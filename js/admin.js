@@ -4,6 +4,58 @@ let lastTxData = "";
 let lastStockData = "";
 let lastReportData = "";
 
+function formatMonthName(month) {
+  return [
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember",
+  ][month - 1];
+}
+
+function populateReportFilterOptions() {
+  const yearSelect = document.getElementById("report-year");
+  if (!yearSelect) return;
+  const currentYear = new Date().getFullYear();
+  const startYear = 2020;
+  const endYear = currentYear + 10;
+  yearSelect.innerHTML = Array.from({ length: endYear - startYear + 1 }, (_, index) => {
+    const year = startYear + index;
+    return `<option value="${year}"${year === currentYear ? " selected" : ""}>${year}</option>`;
+  }).join("");
+}
+
+function getReportRange() {
+  const yearSelect = document.getElementById("report-year");
+  const monthSelect = document.getElementById("report-month");
+  const selectedYear = yearSelect ? Number(yearSelect.value) : new Date().getFullYear();
+  const selectedMonth = monthSelect ? monthSelect.value : "all";
+
+  const startDate = new Date(selectedYear, selectedMonth === "all" ? 0 : Number(selectedMonth) - 1, 1);
+  const endDate = new Date(selectedYear, selectedMonth === "all" ? 11 : Number(selectedMonth), 0);
+
+  const formattedStart = startDate.toISOString().slice(0, 10);
+  const formattedEnd = endDate.toISOString().slice(0, 10);
+  let label = `Total Pendapatan (${selectedYear})`;
+  if (selectedMonth !== "all") {
+    label = `Total Pendapatan (${formatMonthName(Number(selectedMonth))} ${selectedYear})`;
+  }
+
+  return {
+    startDate: formattedStart,
+    endDate: formattedEnd,
+    label,
+  };
+}
+
 setInterval(() => {
   document.getElementById("clock").innerText = new Date().toLocaleTimeString("id-ID");
 }, 1000);
@@ -138,13 +190,12 @@ async function updateStock(id) {
   loadStock();
 }
 
-async function loadSalesReport(force = false) {
+async function loadSalesReport(force = false, startDate = null, endDate = null, labelText = "Total Pendapatan (Tahun Ini)") {
   try {
-    const now = new Date();
-    const endDate = now.toISOString().slice(0, 10);
-    const startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .slice(0, 10);
+    const range = getReportRange();
+    startDate = startDate || range.startDate;
+    endDate = endDate || range.endDate;
+    labelText = labelText || range.label;
 
     const url = new URL(`${apiBaseUrl}/admin/sales-report`);
     url.searchParams.set("start_date", startDate);
@@ -154,7 +205,7 @@ async function loadSalesReport(force = false) {
       throw new Error(`Laporan gagal dimuat: ${res.status} ${res.statusText}`);
     }
     const result = await res.json();
-    const dataStr = JSON.stringify(result);
+    const dataStr = JSON.stringify({ result, startDate, endDate });
     if (!force && dataStr === lastReportData) {
       if (myChart) {
         requestAnimationFrame(() => myChart.resize());
@@ -166,6 +217,8 @@ async function loadSalesReport(force = false) {
     const chartCanvas = document.getElementById("salesChart");
     if (!chartCanvas) return;
 
+    const labelElement = document.getElementById("stat-total-label");
+    if (labelElement) labelElement.innerText = labelText;
     document.getElementById("stat-total-revenue").innerText = `Rp ${Number(result.total_period || 0).toLocaleString()}`;
     const ctx = chartCanvas.getContext("2d");
     if (myChart) {
@@ -173,14 +226,32 @@ async function loadSalesReport(force = false) {
       myChart = null;
     }
 
+    const salesByDate = {};
+    if (Array.isArray(result.labels) && Array.isArray(result.data)) {
+      result.labels.forEach((label, index) => {
+        salesByDate[label] = Number(result.data[index] || 0);
+      });
+    }
+
+    const labels = [];
+    const data = [];
+    let current = new Date(`${startDate}T00:00:00`);
+    const end = new Date(`${endDate}T00:00:00`);
+    while (current <= end) {
+      const key = current.toISOString().slice(0, 10);
+      labels.push(key);
+      data.push(salesByDate[key] || 0);
+      current.setDate(current.getDate() + 1);
+    }
+
     myChart = new Chart(ctx, {
       type: "line",
       data: {
-        labels: Array.isArray(result.labels) ? result.labels : [],
+        labels,
         datasets: [
           {
             label: "Revenue",
-            data: Array.isArray(result.data) ? result.data : [],
+            data,
             borderColor: "#c85a2e",
             backgroundColor: "rgba(200, 90, 46, 0.1)",
             fill: true,
@@ -189,7 +260,19 @@ async function loadSalesReport(force = false) {
           },
         ],
       },
-      options: { responsive: true, maintainAspectRatio: false },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            ticks: {
+              maxRotation: 0,
+              autoSkip: true,
+              maxTicksLimit: 12,
+            },
+          },
+        },
+      },
     });
 
     requestAnimationFrame(() => {
@@ -218,12 +301,23 @@ function syncData() {
 
   if (activeTab === "tab-transactions") loadTransactions();
   else if (activeTab === "tab-stock") loadStock();
-  else if (activeTab === "tab-report") loadSalesReport(true);
+  else if (activeTab === "tab-report") loadSalesReport(false);
 
   setTimeout(() => {
     ind.style.opacity = "0.3";
   }, 500);
 }
+
+function applyReportFilters() {
+  loadSalesReport(true);
+}
+
+const filterButton = document.getElementById("btn-report-refresh");
+if (filterButton) {
+  filterButton.addEventListener("click", applyReportFilters);
+}
+
+populateReportFilterOptions();
 
 const tabButtons = document.querySelectorAll(".nav-link");
 tabButtons.forEach((button) => {
