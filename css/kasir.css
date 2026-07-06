@@ -1,0 +1,127 @@
+:root {
+  --brand-primary: #c85a2e;
+  --brand-dark: #8e3f1a;
+  --brand-bg: #fbf6eb;
+  --brand-muted: #eadfcf;
+}
+body {
+  background-color: var(--brand-bg);
+  font-family: "Segoe UI", Roboto, sans-serif;
+  color: #333;
+  min-height: 100vh;
+  padding-top: 100px;
+}
+.bg-brand {
+  background-color: var(--brand-primary) !important;
+}
+.text-brand {
+  color: var(--brand-primary) !important;
+}
+.btn-brand {
+  background-color: var(--brand-primary);
+  color: #fff;
+  border: none;
+  transition: 0.3s;
+}
+.btn-brand:hover {
+  background-color: var(--brand-dark);
+  color: #fff;
+}
+.navbar {
+  border-bottom: 3px solid rgba(0, 0, 0, 0.1);
+  padding: 12px 0;
+}
+.navbar-brand {
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #fff !important;
+}
+.container {
+  max-width: 1000px;
+}
+.card-kasir {
+  border: none;
+  border-radius: 20px;
+  border-top: 8px solid var(--brand-primary);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  background: #fff;
+  margin-bottom: 30px;
+}
+.kasir-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #f1f1f1;
+  padding-bottom: 20px;
+  margin-bottom: 25px;
+}
+.price-total {
+  color: var(--brand-primary);
+  font-weight: 900;
+  font-size: 2.2rem;
+  margin: 0;
+}
+.queue-badge {
+  font-size: 1.2rem;
+  background: #333;
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 50px;
+}
+.item-box {
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 20px;
+  padding: 20px;
+}
+.input-bayar {
+  font-size: 2.2rem !important;
+  height: 85px;
+  text-align: center;
+  border: 2px solid #e0e0e0 !important;
+  border-radius: 15px !important;
+  font-weight: bold;
+  background-color: #fafafa;
+}
+.input-bayar:focus {
+  border-color: var(--brand-primary) !important;
+  background-color: #fff;
+  box-shadow: 0 0 0 0.25rem rgba(200, 90, 46, 0.25);
+}
+.btn-lg-custom {
+  border-radius: 15px;
+  padding: 15px;
+  font-weight: bold;
+}
+#print-area {
+  display: none;
+}
+@media print {
+  @page {
+    size: auto;
+    margin: 0mm;
+  }
+  body {
+    display: block;
+    background: #fff;
+    padding-top: 0;
+  }
+  .main-kasir-view,
+  .navbar {
+    display: none !important;
+  }
+  #print-area {
+    display: block !important;
+    width: 100%;
+    padding: 10px;
+    font-family: "Courier New", Courier, monospace;
+  }
+  .r-divider {
+    border-top: 1px dashed #000;
+    margin: 5px 0;
+  }
+  .d-print-flex {
+    display: flex !important;
+    justify-content: space-between !important;
+  }
+}

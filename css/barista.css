@@ -1,0 +1,83 @@
+:root {
+  --brand-primary: #c85a2e;
+  --brand-dark: #8e3f1a;
+  --brand-bg: #fbf6eb;
+  --brand-muted: #eadfcf;
+}
+body {
+  background-color: var(--brand-bg);
+  font-family: "Segoe UI", Roboto, sans-serif;
+  color: #333;
+  min-height: 100vh;
+  padding-top: 100px;
+}
+.bg-brand {
+  background-color: var(--brand-primary) !important;
+}
+.text-brand {
+  color: var(--brand-primary) !important;
+}
+.btn-brand {
+  background-color: var(--brand-primary);
+  color: #fff;
+  border: none;
+  transition: 0.3s;
+}
+.btn-brand:hover {
+  background-color: var(--brand-dark);
+  color: #fff;
+}
+.navbar {
+  border-bottom: 3px solid rgba(0, 0, 0, 0.1);
+  padding: 12px 0;
+}
+.navbar-brand {
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #fff !important;
+}
+.barista-card {
+  border: none;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+  transition: 0.3s;
+}
+.barista-card.priority-one {
+  border: 3px solid var(--brand-primary);
+  transform: scale(1.02);
+  box-shadow: 0 10px 25px rgba(200, 90, 46, 0.15);
+}
+.badge-urutan {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--brand-primary);
+  color: white;
+  padding: 8px 20px;
+  border-bottom-right-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  z-index: 10;
+}
+.queue-number {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #333;
+  margin-top: 15px;
+}
+.item-list {
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 15px;
+  padding: 15px;
+  text-align: left;
+}
+.btn-finish {
+  border-radius: 15px;
+  padding: 15px;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
