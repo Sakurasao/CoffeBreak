@@ -141,8 +141,15 @@ async function updateStock(id) {
 
 async function loadSalesReport(force = false, range = reportRange) {
   try {
+    const now = new Date();
+    const endDate = now.toISOString().slice(0, 10);
+    const startDate = new Date(now.getTime() - (range - 1) * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .slice(0, 10);
+
     const url = new URL(`${apiBaseUrl}/admin/sales-report`);
-    url.searchParams.set("range", range);
+    url.searchParams.set("start_date", startDate);
+    url.searchParams.set("end_date", endDate);
     const res = await fetch(url.toString());
     if (!res.ok) {
       throw new Error(`Laporan gagal dimuat: ${res.status} ${res.statusText}`);
