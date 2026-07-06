@@ -1,0 +1,4 @@
+Redeploy trigger
+
+This file was added by GitHub Copilot to force a redeploy of GitHub Pages on 2026-07-06T04:59:00Z.
+Remove this file if you don't want it in the repo.
