@@ -1,5 +1,6 @@
-> *Fadhlullah Hanif Nur Caturangga / 241080200112.
 > *Note: to open other add /admin and /target, example /admin/kasir.
+
+Fadhlullah Hanif Nur Caturangga / 241080200112
 
 # ☕ Sabar Coffee - Digital POS & Order System
 > **ID:** Proyek pembelajaran sistem kasir dan pemesanan digital untuk kedai kopi lokal.  
